@@ -1,0 +1,134 @@
+/* ===== 基础 ===== */
+:root{
+  --bg:#f5f7f8;
+  --card:#ffffff;
+  --ink:#1f2a2e;
+  --muted:#6b7a80;
+  --line:#e3e9ea;
+  --a:#ef6c4d;      /* 推日 橙 */
+  --b:#3b9ae1;      /* 拉日 蓝 */
+  --c:#2faf7a;      /* 下肢 绿 */
+  --accent:#2faf7a;
+  --warn:#d9534f;
+  --warnbg:#fdecea;
+  --radius:16px;
+  --shadow:0 2px 10px rgba(20,40,40,.06);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  line-height:1.65;font-size:16px;-webkit-text-size-adjust:100%;
+}
+h2{font-size:1.35rem;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+h3{font-size:1.05rem;margin:0 0 10px;color:var(--ink)}
+p{margin:0 0 10px}
+a{color:var(--accent);text-decoration:none}
+.lead{color:var(--muted);margin:-4px 0 16px}
+.note{font-size:.86rem;color:var(--muted);background:#f0f4f5;padding:8px 12px;border-radius:10px;margin-top:8px}
+.muted{color:var(--muted)}
+
+/* ===== 今日推荐条 ===== */
+.today-banner{
+  background:linear-gradient(90deg,var(--c),#1d8f63);
+  color:#fff;padding:10px 16px;font-weight:600;text-align:center;
+  font-size:.95rem;position:sticky;top:0;z-index:30;box-shadow:var(--shadow);
+}
+
+/* ===== 顶栏 ===== */
+.topbar{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}
+.brand{font-weight:700;padding:10px 16px 4px;font-size:1.05rem}
+.nav{display:flex;gap:6px;overflow-x:auto;padding:4px 12px 10px;-webkit-overflow-scrolling:touch}
+.nav a{
+  flex:0 0 auto;padding:6px 12px;border-radius:999px;background:#eef3f3;color:#37474a;
+  font-size:.85rem;font-weight:600;white-space:nowrap;
+}
+.nav a.active{background:var(--accent);color:#fff}
+
+/* ===== 区块 ===== */
+main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
+.sec{margin:0 0 30px;scroll-margin-top:96px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.card.goal{background:linear-gradient(135deg,#eafaf2,#f5fbf8)}
+.card.warn{background:var(--warnbg);border-color:#f5c6c2}
+.card.warn h3{color:var(--warn)}
+.kv{list-style:none;margin:0;padding:0}
+.kv li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.kv li:last-child{border-bottom:none}
+.kv span{color:var(--muted);flex:0 0 38%}
+.kv b{text-align:right;font-weight:600}
+.bullet{margin:0;padding-left:20px}
+.bullet li{margin:6px 0}
+.rule{background:#fff7ed;border-left:4px solid var(--a);padding:10px 14px;border-radius:10px;margin-top:10px}
+
+/* ===== 周计划表 ===== */
+.week-table{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.wk-row{display:grid;grid-template-columns:repeat(7,1fr)}
+.wk-head{background:#eef3f3;font-weight:700;text-align:center;font-size:.85rem}
+.wk-head span{padding:8px 2px}
+.wk-cell{padding:10px 4px;text-align:center;border-right:1px solid var(--line);border-top:1px solid var(--line);min-height:62px;display:flex;flex-direction:column;justify-content:center}
+.wk-cell:last-child{border-right:none}
+.wk-cell b{font-size:.95rem}
+.wk-cell i{font-size:.7rem;color:var(--muted);font-style:normal;margin-top:2px}
+.wk-cell.a{background:#fff1ec}.wk-cell.a b{color:var(--a)}
+.wk-cell.b{background:#eaf4fc}.wk-cell.b b{color:var(--b)}
+.wk-cell.c{background:#eafaf2}.wk-cell.c b{color:var(--c)}
+.wk-cell.rest{background:#f2f2f2}.wk-cell.rest b{color:var(--muted)}
+.chip{padding:8px 10px;border-radius:10px;font-size:.8rem;font-weight:700;text-align:center}
+.chip.a{background:#fff1ec;color:var(--a)}
+.chip.b{background:#eaf4fc;color:var(--b)}
+.chip.c{background:#eafaf2;color:var(--c)}
+
+/* ===== 动作列表 ===== */
+.ex-list{display:flex;flex-direction:column;gap:10px}
+.ex{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.ex.core{background:#f3fbf7;border-color:#cdeede}
+.ex.opt{background:#fafafa;border-style:dashed}
+.ex-body{flex:1}
+.ex-name{font-weight:700;margin-bottom:2px}
+.ex-meta{font-size:.82rem;color:var(--accent);font-weight:600;margin-bottom:4px}
+.ex-tip{font-size:.86rem;color:var(--muted)}
+.ex-tip b{color:var(--ink)}
+
+/* 复选框 */
+.chk{flex:0 0 auto;padding-top:2px}
+.chk input{width:22px;height:22px;accent-color:var(--accent);cursor:pointer}
+.ex.done{opacity:.55}
+.ex.done .ex-name{text-decoration:line-through}
+
+/* ===== 答疑 ===== */
+.qa .q{font-weight:700;margin:14px 0 4px;color:var(--ink)}
+.qa .a{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:10px 14px;margin-bottom:6px;font-size:.92rem}
+
+/* ===== 营养计算 ===== */
+.calc-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px}
+.calc-row label{display:flex;flex-direction:column;font-size:.8rem;color:var(--muted);gap:4px;flex:1;min-width:110px}
+.calc-row input,.calc-row select{padding:8px;border:1px solid var(--line);border-radius:8px;font-size:1rem;color:var(--ink)}
+.calc-out{background:#f0f4f5;border-radius:10px;padding:10px 14px;font-weight:600}
+.btn-ghost{background:none;border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:10px;cursor:pointer;font-size:.85rem;margin-top:12px}
+
+/* ===== 打卡 ===== */
+.progress-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:14px;font-weight:600}
+.track-week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.tw-day{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;font-size:.72rem;cursor:pointer;user-select:none}
+.tw-day .d{font-weight:700}
+.tw-day .g{color:var(--muted);margin:3px 0}
+.tw-day .n{font-size:1.1rem}
+.tw-day.today{outline:2px solid var(--accent)}
+.tw-day.done{background:#eafaf2;border-color:#bfe6d2}
+.tw-day.rest{background:#f2f2f2}
+
+/* ===== 页脚 ===== */
+.foot{max-width:760px;margin:0 auto;padding:20px 16px 40px;text-align:center;color:var(--muted);font-size:.82rem;border-top:1px solid var(--line)}
+
+/* ===== 响应式 ===== */
+@media (max-width:560px){
+  .grid-2{grid-template-columns:1fr}
+  .grid-3{grid-template-columns:1fr}
+  h2{font-size:1.2rem}
+  .wk-cell{min-height:54px}
+  .tw-day .g{font-size:.62rem}
+}
