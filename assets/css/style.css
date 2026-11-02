@@ -124,6 +124,59 @@ main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
 /* ===== 页脚 ===== */
 .foot{max-width:760px;margin:0 auto;padding:20px 16px 40px;text-align:center;color:var(--muted);font-size:.82rem;border-top:1px solid var(--line)}
 
+/* ===== 营养：输入网格 ===== */
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px}
+.calc-grid label{display:flex;flex-direction:column;font-size:.78rem;color:var(--muted);gap:4px}
+.calc-grid input,.calc-grid select{padding:8px 6px;border:1px solid var(--line);border-radius:8px;font-size:1rem;color:var(--ink);width:100%}
+.calc-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hint{font-size:.8rem;color:var(--muted)}
+.btn-mini{background:var(--accent);color:#fff;border:none;padding:7px 14px;border-radius:10px;font-size:.85rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn-mini:hover{opacity:.9}
+.btn-x{background:#fdecea;color:var(--warn);border:none;padding:3px 8px;border-radius:6px;font-size:.75rem;cursor:pointer}
+
+/* 营养总目标卡片 */
+.macro-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mcard{background:#f3fbf7;border:1px solid #cdeede;border-radius:12px;padding:12px;text-align:center}
+.m-t{font-size:.8rem;color:var(--muted)}
+.m-v{font-size:1.6rem;font-weight:800;color:var(--c);margin:2px 0}
+.m-u{font-size:.85rem;font-weight:600;margin-left:2px}
+.m-s{font-size:.72rem;color:var(--muted)}
+
+/* 表格通用 */
+.table-wrap{overflow-x:auto;margin-top:8px}
+.meal-tbl,.food-tbl,.pantry-tbl,.plan-tbl,.shop-tbl{border-collapse:collapse;width:100%;min-width:420px;font-size:.85rem}
+.meal-tbl th,.food-tbl th,.pantry-tbl th,.plan-tbl th,.shop-tbl th{background:#eef3f3;color:#37474a;padding:8px 10px;text-align:left;font-size:.78rem;white-space:nowrap}
+.meal-tbl td,.food-tbl td,.pantry-tbl td,.plan-tbl td,.shop-tbl td{padding:7px 10px;border-top:1px solid var(--line)}
+.ok{color:#2f8f5b;font-weight:700}
+.warn{color:#c9821a;font-weight:700;background:#fff7ea;border-radius:6px}
+
+/* 食材搜索 */
+.food-search{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font-size:.95rem;margin-top:6px}
+
+/* 一键换算 */
+.conv-grid{display:grid;grid-template-columns:1fr 1fr 1.6fr;gap:10px;margin-bottom:10px}
+.conv-grid label{display:flex;flex-direction:column;font-size:.78rem;color:var(--muted);gap:4px}
+.conv-grid select,.conv-grid input{padding:8px;border:1px solid var(--line);border-radius:8px;font-size:1rem;color:var(--ink)}
+.conv-out{background:#f0f4f5;border-radius:10px;padding:12px 14px;font-size:1rem;line-height:1.7}
+.conv-out .big{font-size:1.5rem;color:var(--c);font-weight:800}
+
+/* 周备餐 */
+.pantry-add{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+.pantry-add select{flex:1;min-width:160px;padding:8px;border:1px solid var(--line);border-radius:8px;font-size:.95rem}
+.pantry-add label{display:flex;flex-direction:column;font-size:.78rem;color:var(--muted);gap:4px}
+.pantry-add input{width:150px;padding:8px;border:1px solid var(--line);border-radius:8px;font-size:.95rem}
+.pantry-tools{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.off-box{margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#f6f9f9;padding:10px;border-radius:10px}
+.off-box input{padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-size:.9rem}
+.off-box input[type=text]{flex:1;min-width:140px}
+
+.plan-meal{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:12px;background:#fbfdfd}
+.plan-meal h4{margin:0 0 8px;font-size:.95rem;color:var(--ink)}
+.plan-cat{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.plan-cat-t{font-size:.78rem;font-weight:700;color:var(--accent);min-width:42px}
+.chk-inline{display:inline-flex;align-items:center;gap:5px;font-size:.85rem;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer}
+.chk-inline input{accent-color:var(--accent)}
+
 /* ===== 响应式 ===== */
 @media (max-width:560px){
   .grid-2{grid-template-columns:1fr}
@@ -131,4 +184,7 @@ main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
   h2{font-size:1.2rem}
   .wk-cell{min-height:54px}
   .tw-day .g{font-size:.62rem}
+  .calc-grid{grid-template-columns:repeat(2,1fr)}
+  .macro-cards{grid-template-columns:repeat(2,1fr)}
+  .conv-grid{grid-template-columns:1fr}
 }
