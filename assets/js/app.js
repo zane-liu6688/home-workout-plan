@@ -171,7 +171,7 @@
     var carbCal = maint - prot*4 - fat*9;
     var carb = carbCal>0 ? Math.round(carbCal/4) : 0;
     var fiber = Math.max(25, Math.round(maint/1000*14));
-    var water = Math.round(w*35)/10;
+    var water = Math.round(w*35)/1000;
 
     $("macroCards").innerHTML =
       card("热量(维持量)", maint, "kcal", "不制造大缺口，身体重组") +
