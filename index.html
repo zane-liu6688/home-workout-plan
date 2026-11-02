@@ -23,6 +23,7 @@
     <a href="#dayC">下肢C</a>
     <a href="#cardio">有氧</a>
     <a href="#nutrition">营养</a>
+    <a href="#micro">微量</a>
     <a href="#prep">备餐</a>
     <a href="#suggest">推荐</a>
     <a href="#principles">原则</a>
@@ -335,13 +336,18 @@
   <div class="card">
     <h3>④ 常见健身食材库（每 100g / 100ml，真实数据）</h3>
     <input type="text" id="foodSearch" class="food-search" placeholder="搜索：鸡胸、三文鱼、燕麦、牛奶、西兰花…">
+    <div class="ftabs" id="foodTabs">
+      <button class="ftab active" data-tab="macro">💪 宏量营养素</button>
+      <button class="ftab" data-tab="v">🧪 维生素（11 项）</button>
+      <button class="ftab" data-tab="m">⚙️ 矿物质（6 项）</button>
+    </div>
     <div class="table-wrap">
       <table class="food-tbl" id="foodTbl">
         <thead><tr><th>食材</th><th>蛋白(g)</th><th>脂肪(g)</th><th>碳水(g)</th><th>纤维(g)</th><th>热量(kcal)</th><th>说明</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
-    <p class="note">数据来源：USDA FoodData Central 标准参考值（按生重/干重计；液体按 100ml）。包装食品以营养标签为准。没收录的用下面「周备餐」里的联网查 / 手动加。</p>
+    <p class="note">数据来源：USDA FoodData Central 标准参考值（按生重/干重计；液体按 100ml）。<b>高亮格 = 该指标在同类里属于"富集食物"</b>（吃 100g 能补到每日目标的 10% 以上）。包装食品以营养标签为准。没收录的用下面「周备餐」里的联网查 / 手动加。</p>
   </div>
 
   <div class="card calc">
@@ -353,6 +359,83 @@
     </div>
     <div class="conv-out" id="convOut"></div>
     <p class="note">例：练后餐要 50g 蛋白，选「鸡胸肉(生)」→ 约 222g 鸡胸（含蛋白 50g、脂肪约 6g、热量约 266kcal）。下方同时列出该份附带的其它营养，方便配平。</p>
+  </div>
+</section>
+
+<!-- ============ 微量营养素 ============ -->
+<section id="micro" class="sec">
+  <h2>🧬 微量营养素 · 维生素 & 矿物质</h2>
+  <p class="lead">蛋白质脂肪碳水管的是<strong>热量和肌肉</strong>；维生素矿物质管的是<strong>不掉头发、不贫血、骨密度不塌、免疫不垮、训练有劲</strong>。很多人减脂期只盯蛋白，结果三个月后疲乏、掉发、怕冷——就是这里亏的。</p>
+
+  <div class="card">
+    <h3>① 你的每日目标（17 项，权威值）</h3>
+    <div class="table-wrap">
+      <table class="micro-tbl">
+        <thead><tr><th>营养素</th><th>每日目标</th><th>主要食物来源</th></tr></thead>
+        <tbody id="microTargetBody"></tbody>
+      </table>
+    </div>
+    <p class="note">目标值依据《中国居民膳食营养素参考摄入量（2023 版）》成年男性 RNI/AI（22 岁、轻体力）。食物含量依据 USDA FoodData Central。</p>
+  </div>
+
+  <div class="card">
+    <h3>② 我的达标检查（实际吃了多少 → 差多少 → 吃几克什么补）</h3>
+    <p class="hint">数据有两个来源：<b>①「⑥ 备餐」点「计算分配」后自动带出</b>（按日均）；<b>② 下面手动加</b>你今天实际吃的。两者会合并计算。</p>
+    <div class="mc-ctrl">
+      <select id="mcFood"></select>
+      <input type="number" id="mcGram" value="100" min="1" placeholder="克数">
+      <button id="mcAdd" class="btn-mini">+ 加到今天</button>
+      <button id="mcClear" class="btn-mini ghost">清空重来</button>
+    </div>
+    <div id="mcList" class="mc-list"></div>
+    <div id="microOut"></div>
+  </div>
+
+  <div class="card">
+    <h3>③ 怎么吃才不缺（不用买补剂）</h3>
+    <div class="grid-2">
+      <div>
+        <h4 class="mini-h">每天固定这几样，基本不会缺</h4>
+        <ul class="bullet">
+          <li><b>奶 300–500ml</b>：钙 + B2 + B12 的底盘（乳糖不耐就换无糖酸奶）。</li>
+          <li><b>蛋 1–2 个</b>：维 A、维 D、B12、胆碱，全在蛋黄里，别只吃蛋白。</li>
+          <li><b>深绿叶菜 1–2 拳</b>：菠菜/西兰花/生菜 → 维 K、叶酸、维 C、镁。<b>维 K 和叶酸主要就靠它</b>。</li>
+          <li><b>橙黄色蔬果 1 份</b>：胡萝卜/红薯/番茄 → 维 A（β-胡萝卜素）。</li>
+          <li><b>海鱼 2 次/周</b>：三文鱼/鳕鱼 → 维 D + Omega-3 + 硒。</li>
+          <li><b>红肉 2–3 餐/周</b>：牛肉/猪里脊 → 铁 + 锌 + B1（猪肉 B1 最高）。</li>
+          <li><b>坚果 1 小把（20–25g）</b>：杏仁 → 维 E + 镁 + 钙。</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="mini-h">几个容易踩的坑</h4>
+        <ul class="bullet">
+          <li><b>维 D 几乎吃不够</b>：食物里只有海鱼和蛋黄多，日晒 15–20 分钟/天更实际；冬天或久居室内可考虑补剂 400–800 IU（问医生）。</li>
+          <li><b>铁分两种</b>：红肉的"血红素铁"吸收率 15–35%，菠菜的非血红素铁只有 2–5%，<b>菠菜补铁是伪命题</b>，别指望它。补铁靠牛肉。</li>
+          <li><b>维 C 帮铁吸收</b>：吃牛肉时配番茄/西兰花，铁吸收能翻倍。</li>
+          <li><b>水煮太久会掉水溶性维生素</b>：B 族和维 C 怕长时间高温水煮，蔬菜焯 1–2 分钟或快炒即可。</li>
+          <li><b>别用补剂代替食物</b>：复合维生素是"保险"，不是"主食"，食物里的植物化学物补剂里没有。</li>
+          <li><b>脂肪吃太少会连累维 E、维 A、维 D 吸收</b>：这三样是脂溶性的，菜里得有油。</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">以上是通用营养学建议，不构成医疗建议；有明确缺乏症（如贫血、维 D 严重不足）请按医生化验结果处理。</p>
+  </div>
+
+  <div class="card">
+    <h3>④ 宏量营养素里还有 4 个"隐形项"</h3>
+    <p class="hint">蛋白质/脂肪/碳水是大类，但光看总量会漏掉这 4 个——它们才是决定"内脏脂肪、血脂、发炎水平"的关键。</p>
+    <div class="table-wrap">
+      <table class="micro-tbl">
+        <thead><tr><th>项目</th><th>每日上限/目标</th><th>说明 & 主要来源</th></tr></thead>
+        <tbody>
+          <tr><td><b>饱和脂肪</b></td><td>&lt; 10% 热量<br>约 &lt; 23 g</td><td class="muted">肥肉、黄油、椰子油、全脂奶过量。<b>你每天 50g 总脂肪里留出 20g 以内给它</b>；三文鱼/坚果/橄榄油属于不饱和脂肪，不算在内。</td></tr>
+          <tr><td><b>Omega-3 (EPA+DHA)</b></td><td>250–500 mg</td><td class="muted">三文鱼 100g ≈ 1.5–2 g（一顿就够一周的量）；不吃鱼可考虑藻油。作用：抗炎、护关节、护心血管。</td></tr>
+          <tr><td><b>添加糖</b></td><td>&lt; 25 g</td><td class="muted">含糖饮料、奶茶、酱料、面包。<b>这是腹部囤脂第一推手</b>，比吃油更狠。水果里的糖不算"添加糖"。</td></tr>
+          <tr><td><b>钠（盐）</b></td><td>&lt; 2000 mg<br>约盐 5 g</td><td class="muted">做菜放的盐 + 酱油 + 加工肉 + 外卖。盐不产生热量，但高钠会水肿、显肚子、升血压。<b>训练出汗多也别猛加盐</b>，正常吃菜就够。</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">水：每天 2.2L 左右（体重×35ml），训练日 +0.5L，出汗多按口渴补。水不计入采购清单。</p>
   </div>
 </section>
 
