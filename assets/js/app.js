@@ -89,45 +89,73 @@
   }
 
   /* ---------- 营养：身体数据 → 全天营养 → 四餐 → 食材换算 → 周备餐 ---------- */
+  /* 微量营养素字段顺序(每100g/100ml)：
+     [0]维A μgRAE [1]维D μg [2]维E mg [3]维K μg [4]B1 mg [5]B2 mg [6]B3 mgNE
+     [7]B6 mg [8]B12 μg [9]叶酸 μgDFE [10]维C mg [11]钙 mg [12]铁 mg [13]锌 mg
+     [14]镁 mg [15]硒 μg [16]钾 mg
+     数据来源：USDA FoodData Central 标准参考值（生重/干重；液体按100ml） */
   var FOODS = [
     // 蛋白来源
-    {n:"鸡胸肉(生,去皮)",cat:"protein",p:22.5,f:2.6,c:0,fi:0,k:120,unit:"g",note:"USDA：最便宜纯蛋白"},
-    {n:"鸡腿肉(去皮生)",cat:"protein",p:18.6,f:7.9,c:0,fi:0,k:144,unit:"g",note:"比鸡胸香，脂肪略高"},
-    {n:"瘦牛肉(生)",cat:"protein",p:21,f:4.5,c:0,fi:0,k:125,unit:"g",note:"红肉，含铁高"},
-    {n:"牛里脊(生)",cat:"protein",p:22,f:3,c:0,fi:0,k:125,unit:"g",note:"嫩，脂肪低"},
-    {n:"猪里脊(生)",cat:"protein",p:20,f:6,c:0,fi:0,k:134,unit:"g",note:"家常白肉"},
-    {n:"三文鱼(生)",cat:"protein",p:20.3,f:13.1,c:0,fi:0,k:208,unit:"g",note:"USDA：优质脂肪Omega-3"},
-    {n:"鳕鱼(生)",cat:"protein",p:18,f:1,c:0,fi:0,k:85,unit:"g",note:"极低脂白肉"},
-    {n:"虾仁(生)",cat:"protein",p:20,f:0.5,c:0,fi:0,k:85,unit:"g",note:"低脂高蛋白"},
-    {n:"鸡蛋(全蛋)",cat:"protein",p:12.6,f:9.5,c:0.7,fi:0,k:143,unit:"g",note:"约50g/个=蛋白6.3g"},
-    {n:"蛋清",cat:"protein",p:10.9,f:0.2,c:0.7,fi:0,k:52,unit:"g",note:"纯蛋白几乎无脂，约33g/个"},
-    {n:"牛奶(全脂)",cat:"protein",p:3.2,f:3.6,c:4.8,fi:0,k:61,unit:"ml",note:"每100ml"},
-    {n:"无糖希腊酸奶",cat:"protein",p:10,f:0.4,c:3.6,fi:0,k:59,unit:"g",note:"选无糖"},
-    {n:"北豆腐(硬)",cat:"protein",p:17.3,f:8.7,c:2.8,fi:0.4,k:144,unit:"g",note:"植物蛋白"},
-    {n:"毛豆(熟)",cat:"protein",p:13,f:6,c:11,fi:4,k:140,unit:"g",note:"植物蛋白+碳水"},
-    {n:"乳清蛋白粉",cat:"protein",p:80,f:6,c:8,fi:0,k:400,unit:"g",note:"一勺约30g=24g蛋白"},
+    {n:"鸡胸肉(生,去皮)",cat:"protein",p:22.5,f:2.6,c:0,fi:0,k:120,unit:"g",note:"USDA：最便宜纯蛋白",mi:[3,0.1,0.21,0.3,0.07,0.11,10.6,0.6,0.21,4,0,5,0.4,0.7,28,22.8,334]},
+    {n:"鸡腿肉(去皮生)",cat:"protein",p:18.6,f:7.9,c:0,fi:0,k:144,unit:"g",note:"比鸡胸香，脂肪略高",mi:[11,0.1,0.3,0.5,0.08,0.16,5.5,0.4,0.5,6,0,8,0.8,1.6,22,17,240]},
+    {n:"瘦牛肉(生)",cat:"protein",p:21,f:4.5,c:0,fi:0,k:125,unit:"g",note:"红肉，含铁高",mi:[0,0.1,0.4,1.5,0.06,0.16,5.5,0.5,1.5,7,0,12,2.6,4.8,20,20,320]},
+    {n:"牛里脊(生)",cat:"protein",p:22,f:3,c:0,fi:0,k:125,unit:"g",note:"嫩，脂肪低",mi:[0,0.1,0.3,1.4,0.07,0.12,5.0,0.5,1.2,6,0,18,1.9,4.0,22,26,330]},
+    {n:"猪里脊(生)",cat:"protein",p:20,f:6,c:0,fi:0,k:134,unit:"g",note:"家常白肉，B1高",mi:[2,0.6,0.3,0.5,0.7,0.2,5.0,0.5,0.5,5,0,5,0.8,2.0,25,30,350]},
+    {n:"三文鱼(生)",cat:"protein",p:20.3,f:13.1,c:0,fi:0,k:208,unit:"g",note:"USDA：优质脂肪Omega-3",mi:[12,11,3.5,0.5,0.2,0.2,8.5,0.6,3.2,26,0,9,0.3,0.4,27,25,363]},
+    {n:"鳕鱼(生)",cat:"protein",p:18,f:1,c:0,fi:0,k:85,unit:"g",note:"极低脂白肉",mi:[12,0.9,0.8,0.1,0.08,0.07,2.1,0.2,0.9,7,0,16,0.4,0.5,32,33,413]},
+    {n:"虾仁(生)",cat:"protein",p:20,f:0.5,c:0,fi:0,k:85,unit:"g",note:"低脂高蛋白，硒高",mi:[54,0.1,1.3,0.3,0.02,0.03,2.6,0.1,1.1,9,0,54,0.5,1.3,39,35,259]},
+    {n:"鸡蛋(全蛋)",cat:"protein",p:12.6,f:9.5,c:0.7,fi:0,k:143,unit:"g",note:"约50g/个=蛋白6.3g",mi:[160,2.0,1.05,0.3,0.04,0.46,0.07,0.17,0.89,47,0,56,1.75,1.29,12,30.7,138]},
+    {n:"蛋清",cat:"protein",p:10.9,f:0.2,c:0.7,fi:0,k:52,unit:"g",note:"纯蛋白几乎无脂，约33g/个",mi:[0,0,0,0,0.004,0.44,0.1,0.005,0.09,4,0,7,0.08,0.03,11,20,163]},
+    {n:"牛奶(全脂)",cat:"protein",p:3.2,f:3.6,c:4.8,fi:0,k:61,unit:"ml",note:"每100ml，补钙主力",mi:[46,1.3,0.07,0.3,0.02,0.17,0.09,0.04,0.45,5,0.9,113,0.03,0.4,10,3.7,132]},
+    {n:"无糖希腊酸奶",cat:"protein",p:10,f:0.4,c:3.6,fi:0,k:59,unit:"g",note:"选无糖，钙高",mi:[1,0.1,0.01,0.2,0.02,0.28,0.2,0.06,0.75,7,0,110,0.04,0.5,11,9.7,141]},
+    {n:"北豆腐(硬)",cat:"protein",p:17.3,f:8.7,c:2.8,fi:0.4,k:144,unit:"g",note:"植物蛋白+钙",mi:[0,0,0.4,2.0,0.08,0.05,0.1,0.05,0,15,0,138,5.4,0.8,30,8.9,121]},
+    {n:"毛豆(熟)",cat:"protein",p:13,f:6,c:11,fi:4,k:140,unit:"g",note:"植物蛋白+叶酸",mi:[9,0,0.68,26.8,0.2,0.15,1.6,0.1,0,165,6,63,2.3,1.4,64,1.5,436]},
+    {n:"乳清蛋白粉",cat:"protein",p:80,f:6,c:8,fi:0,k:400,unit:"g",note:"一勺约30g=24g蛋白",mi:[0,0,0,0,0.1,1.5,1.0,1.0,1.5,10,0,500,1.5,3.0,50,20,500]},
     // 碳水来源
-    {n:"燕麦(干)",cat:"carb",p:17,f:7,c:66,fi:10,k:379,unit:"g",note:"慢碳，煮前称重"},
-    {n:"糙米(熟)",cat:"carb",p:2.6,f:0.9,c:23,fi:1.8,k:112,unit:"g",note:"主食换精白米"},
-    {n:"白米饭(熟)",cat:"carb",p:2.7,f:0.3,c:28,fi:0.4,k:130,unit:"g",note:"常吃的主食"},
-    {n:"红薯(蒸)",cat:"carb",p:1.6,f:0.1,c:20,fi:3,k:90,unit:"g",note:"优质慢碳"},
-    {n:"土豆(蒸)",cat:"carb",p:2,f:0.1,c:20,fi:1.8,k:87,unit:"g",note:"低脂慢碳"},
-    {n:"香蕉",cat:"carb",p:1.1,f:0.3,c:23,fi:2.6,k:89,unit:"g",note:"练后快碳方便"},
-    {n:"全麦面包",cat:"carb",p:13,f:3.4,c:41,fi:7,k:247,unit:"g",note:"看配料表，真全麦"},
-    {n:"意大利面(熟)",cat:"carb",p:5,f:1,c:25,fi:1.8,k:130,unit:"g",note:"慢碳主食"},
-    // 蔬菜（看纤维）
-    {n:"西兰花(生)",cat:"veg",p:2.8,f:0.4,c:6.6,fi:2.6,k:34,unit:"g",note:"十字花科，纤维高"},
-    {n:"菠菜(生)",cat:"veg",p:2.9,f:0.4,c:3.6,fi:2.2,k:23,unit:"g",note:"补铁补纤维"},
-    {n:"生菜",cat:"veg",p:1.4,f:0.2,c:2.9,fi:1.3,k:15,unit:"g",note:"低卡 filler"},
-    {n:"番茄",cat:"veg",p:0.9,f:0.2,c:3.9,fi:1.2,k:18,unit:"g",note:"维生素C"},
-    {n:"黄瓜",cat:"veg",p:0.7,f:0.1,c:3.6,fi:0.5,k:15,unit:"g",note:"低卡补水"},
-    {n:"胡萝卜(生)",cat:"veg",p:0.9,f:0.2,c:9.6,fi:2.8,k:41,unit:"g",note:"β-胡萝卜素"},
-    {n:"西葫芦",cat:"veg",p:1.2,f:0.3,c:3.1,fi:1.0,k:17,unit:"g",note:"低卡蔬菜"},
+    {n:"燕麦(干)",cat:"carb",p:17,f:7,c:66,fi:10,k:379,unit:"g",note:"慢碳，煮前称重",mi:[0,0,0.4,2.0,0.76,0.14,0.96,0.12,0,56,0,54,4.7,4.0,177,34,429]},
+    {n:"糙米(熟)",cat:"carb",p:2.6,f:0.9,c:23,fi:1.8,k:112,unit:"g",note:"主食换精白米，镁高",mi:[0,0,0.02,0.2,0.1,0.01,1.5,0.1,0,4,0,10,0.4,0.6,43,7.5,79]},
+    {n:"白米饭(熟)",cat:"carb",p:2.7,f:0.3,c:28,fi:0.4,k:130,unit:"g",note:"常吃的主食",mi:[0,0,0.01,0.1,0.02,0.01,0.4,0.03,0,3,0,10,0.2,0.4,12,7.5,35]},
+    {n:"红薯(蒸)",cat:"carb",p:1.6,f:0.1,c:20,fi:3,k:90,unit:"g",note:"优质慢碳，维A极高",mi:[709,0,0.6,1.8,0.08,0.05,0.6,0.2,0,6,2.4,27,0.6,0.3,18,0.6,230]},
+    {n:"土豆(蒸)",cat:"carb",p:2,f:0.1,c:20,fi:1.8,k:87,unit:"g",note:"低脂慢碳，钾高",mi:[0,0,0.03,1.5,0.08,0.02,1.1,0.3,0,10,13,8,0.3,0.3,20,0.3,328]},
+    {n:"香蕉",cat:"carb",p:1.1,f:0.3,c:23,fi:2.6,k:89,unit:"g",note:"练后快碳，钾高",mi:[3,0,0.1,0.5,0.03,0.07,0.7,0.37,0,20,8.7,5,0.26,0.15,27,1.0,358]},
+    {n:"全麦面包",cat:"carb",p:13,f:3.4,c:41,fi:7,k:247,unit:"g",note:"看配料表，真全麦",mi:[0,0,0.9,1.4,0.4,0.2,4.0,0.2,0,42,0,107,2.5,1.8,82,25,254]},
+    {n:"意大利面(熟)",cat:"carb",p:5,f:1,c:25,fi:1.8,k:130,unit:"g",note:"慢碳主食",mi:[0,0,0.06,0.1,0.1,0.03,1.0,0.05,0,62,0,7,0.5,0.5,18,26,44]},
+    // 蔬菜（看纤维 + 维生素矿物质）
+    {n:"西兰花(生)",cat:"veg",p:2.8,f:0.4,c:6.6,fi:2.6,k:34,unit:"g",note:"维C+维K双高",mi:[31,0,0.78,101.6,0.07,0.12,0.64,0.18,0,63,89,47,0.73,0.41,21,2.5,316]},
+    {n:"菠菜(生)",cat:"veg",p:2.9,f:0.4,c:3.6,fi:2.2,k:23,unit:"g",note:"叶酸+维K极高（草酸影响铁吸收）",mi:[469,0,2.0,483,0.08,0.19,0.72,0.2,0,194,28,99,2.7,0.53,79,1.0,558]},
+    {n:"生菜",cat:"veg",p:1.4,f:0.2,c:2.9,fi:1.3,k:15,unit:"g",note:"低卡 filler，维K高",mi:[370,0,0.22,102,0.07,0.08,0.38,0.09,0,38,9.2,36,0.86,0.18,13,0.6,194]},
+    {n:"番茄",cat:"veg",p:0.9,f:0.2,c:3.9,fi:1.2,k:18,unit:"g",note:"维生素C",mi:[42,0,0.54,7.9,0.04,0.02,0.59,0.08,0,15,13.7,10,0.27,0.17,11,0,237]},
+    {n:"黄瓜",cat:"veg",p:0.7,f:0.1,c:3.6,fi:0.5,k:15,unit:"g",note:"低卡补水",mi:[5,0,0.03,16.4,0.03,0.03,0.1,0.04,0,7,2.8,16,0.28,0.2,13,0.3,147]},
+    {n:"胡萝卜(生)",cat:"veg",p:0.9,f:0.2,c:9.6,fi:2.8,k:41,unit:"g",note:"β-胡萝卜素(维A)之王",mi:[835,0,0.66,13.2,0.07,0.06,0.98,0.14,0,19,5.9,33,0.3,0.24,12,0.1,320]},
+    {n:"西葫芦",cat:"veg",p:1.2,f:0.3,c:3.1,fi:1.0,k:17,unit:"g",note:"低卡蔬菜",mi:[10,0,0.12,4.3,0.05,0.09,0.45,0.16,0,24,17.9,16,0.37,0.32,18,0.2,261]},
     // 脂肪来源
-    {n:"花生酱",cat:"fat",p:25,f:50,c:20,fi:6,k:588,unit:"g",note:"脂肪主要来源"},
-    {n:"杏仁",cat:"fat",p:21,f:49,c:22,fi:12.5,k:579,unit:"g",note:"健康脂肪+蛋白"},
-    {n:"橄榄油",cat:"fat",p:0,f:100,c:0,fi:0,k:900,unit:"g",note:"纯脂肪，拌菜用"}
+    {n:"花生酱",cat:"fat",p:25,f:50,c:20,fi:6,k:588,unit:"g",note:"脂肪+维E+镁",mi:[0,0,9.1,0.3,0.15,0.19,13.7,0.6,0,87,0,43,1.9,2.9,168,4.5,649]},
+    {n:"杏仁",cat:"fat",p:21,f:49,c:22,fi:12.5,k:579,unit:"g",note:"维E之冠，钙镁高",mi:[0,0,25.6,0,0.21,1.14,3.6,0.14,0,44,0,269,3.7,3.1,270,4.1,733]},
+    {n:"橄榄油",cat:"fat",p:0,f:100,c:0,fi:0,k:900,unit:"g",note:"纯脂肪，维E+维K",mi:[0,0,14.4,60.2,0,0,0,0,0,0,0,1,0.56,0,0,0,1]}
   ];
+
+  /* 17 项微量营养素元数据：每日目标(中国居民膳食营养素参考摄入量 DRIs 2023，成年男 18-49 岁)、
+     主要食物来源、缺乏表现、以及"补缺推荐食材"(从上面库里挑最富集的) */
+  var MI = [
+    {n:"维生素A", u:"μg", t:800,  grp:"v", fix:"胡萝卜(生)", src:"胡萝卜、红薯、菠菜、蛋黄"},
+    {n:"维生素D", u:"μg", t:10,   grp:"v", fix:"三文鱼(生)", src:"三文鱼、蛋黄、日晒"},
+    {n:"维生素E", u:"mg", t:14,   grp:"v", fix:"杏仁",       src:"杏仁、花生酱、橄榄油"},
+    {n:"维生素K", u:"μg", t:80,   grp:"v", fix:"菠菜(生)",   src:"菠菜、西兰花、生菜"},
+    {n:"维生素B1", u:"mg", t:1.4, grp:"v", fix:"猪里脊(生)", src:"猪里脊、燕麦、全麦"},
+    {n:"维生素B2", u:"mg", t:1.4, grp:"v", fix:"牛奶(全脂)", src:"牛奶、鸡蛋、杏仁"},
+    {n:"维生素B3", u:"mg", t:15,  grp:"v", fix:"鸡胸肉(生,去皮)", src:"鸡胸、牛肉、花生酱"},
+    {n:"维生素B6", u:"mg", t:1.4, grp:"v", fix:"鸡胸肉(生,去皮)", src:"鸡胸、三文鱼、土豆"},
+    {n:"维生素B12", u:"μg", t:2.4, grp:"v", fix:"三文鱼(生)", src:"牛肉、三文鱼、牛奶"},
+    {n:"叶酸", u:"μg", t:400,     grp:"v", fix:"菠菜(生)",   src:"菠菜、毛豆、西兰花"},
+    {n:"维生素C", u:"mg", t:100,  grp:"v", fix:"西兰花(生)", src:"西兰花、番茄、香蕉"},
+    {n:"钙", u:"mg", t:800,       grp:"m", fix:"牛奶(全脂)", src:"牛奶、北豆腐、杏仁"},
+    {n:"铁", u:"mg", t:12,        grp:"m", fix:"瘦牛肉(生)", src:"瘦牛肉、猪里脊、菠菜"},
+    {n:"锌", u:"mg", t:12.5,      grp:"m", fix:"瘦牛肉(生)", src:"瘦牛肉、鸡肉、燕麦"},
+    {n:"镁", u:"mg", t:330,       grp:"m", fix:"燕麦(干)",   src:"燕麦、杏仁、菠菜"},
+    {n:"硒", u:"μg", t:60,        grp:"m", fix:"虾仁(生)",   src:"虾、鱼、牛肉"},
+    {n:"钾", u:"mg", t:2000,      grp:"m", fix:"香蕉",       src:"香蕉、土豆、菠菜"}
+  ];
+  var MI_MAX = 17;
 
   var MEALS = [
     {name:"早餐",pct:0.25},
@@ -196,16 +224,50 @@
     return '<div class="mcard"><div class="m-t">'+t+'</div><div class="m-v">'+v+'<span class="m-u">'+u+'</span></div><div class="m-s">'+sub+'</div></div>';
   }
 
-  // --- 食材库渲染 + 搜索 ---
+  // --- 食材库渲染 + 搜索 + 宏量/维生素/矿物质切换 ---
+  var foodTab = "macro";
+  function miVal(f, i){ return (f.mi && f.mi.length>i) ? f.mi[i] : 0; }
+  function fmtV(v){
+    if(v>=100) return String(Math.round(v));
+    if(v>=10) return String(Math.round(v*10)/10);
+    return String(Math.round(v*100)/100);
+  }
   function renderFoods(filter){
-    var tb = $("foodTbl").querySelector("tbody");
+    var tbl = $("foodTbl"), tb = tbl.querySelector("tbody"), th = tbl.querySelector("thead");
     var list = FOODS.filter(function(f){ return !filter || f.n.indexOf(filter)>=0; });
-    tb.innerHTML = list.map(function(f){
-      return "<tr><td><b>"+f.n+"</b></td><td>"+f.p+"</td><td>"+f.f+"</td><td>"+f.c+"</td><td>"+f.fi+"</td><td>"+f.k+"</td><td class='muted'>"+f.note+"</td></tr>";
-    }).join("") || "<tr><td colspan='7' class='muted'>没找到，换个词试试</td></tr>";
+    if(foodTab==="macro"){
+      th.innerHTML = "<tr><th>食材</th><th>蛋白(g)</th><th>脂肪(g)</th><th>碳水(g)</th><th>纤维(g)</th><th>热量(kcal)</th><th>说明</th></tr>";
+      tb.innerHTML = list.map(function(f){
+        return "<tr><td><b>"+f.n+"</b></td><td>"+f.p+"</td><td>"+f.f+"</td><td>"+f.c+"</td><td>"+f.fi+"</td><td>"+f.k+"</td><td class='muted'>"+f.note+"</td></tr>";
+      }).join("") || "<tr><td colspan='7' class='muted'>没找到，换个词试试</td></tr>";
+    } else {
+      var idxs = [];
+      MI.forEach(function(m,i){ if(m.grp===foodTab) idxs.push(i); });
+      th.innerHTML = "<tr><th>食材</th>"+idxs.map(function(i){
+        return "<th>"+MI[i].n+"<br><span class='th-u'>"+MI[i].u+"/100</span></th>";
+      }).join("")+"</tr>";
+      tb.innerHTML = list.map(function(f){
+        return "<tr><td><b>"+f.n+"</b></td>"+idxs.map(function(i){
+          var v = miVal(f,i);
+          var rich = v >= MI[i].t/10;   // 100g 能补到目标 10% 以上 = 富集食物
+          return "<td class='"+(rich?"hi":"")+"'>"+(v?fmtV(v):"—")+"</td>";
+        }).join("")+"</tr>";
+      }).join("") || "<tr><td colspan='8' class='muted'>没找到，换个词试试</td></tr>";
+    }
   }
   renderFoods("");
   $("foodSearch").addEventListener("input", function(){ renderFoods(this.value.trim()); });
+  var ftabs = $("foodTabs");
+  if(ftabs){
+    ftabs.querySelectorAll(".ftab").forEach(function(b){
+      b.addEventListener("click", function(){
+        ftabs.querySelectorAll(".ftab").forEach(function(x){ x.classList.remove("active"); });
+        b.classList.add("active");
+        foodTab = b.getAttribute("data-tab");
+        renderFoods($("foodSearch").value.trim());
+      });
+    });
+  }
 
   // --- 食材下拉（换算器 + 备餐库共用）---
   function fillFoodSelect(sel){
@@ -226,6 +288,105 @@
     $("convOut").innerHTML = "要吃 <b class='big'>"+Math.round(grams)+" g</b> "+f.n+" 才能凑够 <b>"+amt+"g "+tn+"</b>。<br>这份食材同时含：蛋白 "+Math.round(ap)+"g ｜ 脂肪 "+Math.round(af)+"g ｜ 碳水 "+Math.round(ac)+"g ｜ 热量约 "+ak+" kcal。";
   }
   ["convType","convAmt","convFood"].forEach(function(id){ $(id).addEventListener("input", convert); $(id).addEventListener("change", convert); });
+
+  /* ---------- 微量营养素：达标计算 ---------- */
+  var MC = [];        // 手动加入的今日食材 {name, grams, src}
+  var PLAN_MC = [];   // 由备餐分配自动带出的日均食材
+
+  function renderMicroTarget(){
+    var tb = $("microTargetBody");
+    if(!tb) return;
+    tb.innerHTML = MI.map(function(m){
+      return "<tr><td><b>"+m.n+"</b></td><td>"+m.t+" "+m.u+"</td><td class='muted'>"+m.src+"</td></tr>";
+    }).join("");
+  }
+
+  function intakeArr(){
+    var arr = [], i;
+    for(i=0;i<MI.length;i++) arr.push(0);
+    PLAN_MC.concat(MC).forEach(function(it){
+      var f = findFood(it.name); if(!f) return;
+      for(i=0;i<MI.length;i++){ arr[i] += miVal(f,i)/100*it.grams; }
+    });
+    return arr;
+  }
+
+  function microReport(){
+    var arr = intakeArr();
+    var has = false;
+    for(var j=0;j<arr.length;j++){ if(arr[j]>0){ has=true; break; } }
+    if(!has) return "<p class='hint'>还没有摄入数据。先去「⑥ 备餐」点「计算分配」，或在下方手动加几样今天吃的东西。</p>";
+    function block(grp, title){
+      var rows = "";
+      MI.forEach(function(m,i){
+        if(m.grp!==grp) return;
+        var v=arr[i], pct=m.t>0?v/m.t*100:0;
+        var st = pct>=100?"ok":(pct>=70?"mid":"warn");
+        var w = Math.min(100,pct);
+        rows += "<tr><td><b>"+m.n+"</b></td><td>"+fmtV(v)+" "+m.u+"</td><td class='muted'>"+m.t+" "+m.u+"</td>"+
+          "<td><div class='pbar'><i class='pb-"+st+"' style='width:"+w.toFixed(0)+"%'></i></div></td>"+
+          "<td class='"+st+"'>"+(pct>=100?("✅ "+Math.round(pct)+"%"):("⚠️ "+Math.round(pct)+"%"))+"</td></tr>";
+      });
+      return "<h4 class='micro-h'>"+title+"</h4><div class='table-wrap'><table class='micro-tbl'><thead><tr><th>营养素</th><th>实际摄入</th><th>每日目标</th><th>达标度</th><th>状态</th></tr></thead><tbody>"+rows+"</tbody></table></div>";
+    }
+    var html = block("v", "🧪 维生素（11 项）") + block("m", "⚙️ 矿物质（6 项）");
+    var lacks = [], goods = 0;
+    MI.forEach(function(m,i){
+      var v=arr[i]; if(v>=m.t*0.7){ goods++; return; }
+      var f = findFood(m.fix);
+      var fv = f ? miVal(f,i) : 0;
+      var needG = fv>0 ? (m.t-v)/(fv/100) : 0;
+      lacks.push("缺 <b>"+m.n+"</b>（"+fmtV(v)+" / "+m.t+m.u+"，达标 "+Math.round(v/m.t*100)+"%）"+
+        (needG>0?(" → 补 <b>"+m.fix+" "+Math.round(needG)+"g</b>"):"")+"　日常来源："+m.src);
+    });
+    if(lacks.length){
+      html += "<div class='rec-box'><h4>⚠️ 这些没吃够（低于目标 70%，按一周日均算）</h4>"+
+        lacks.map(function(t){ return "<p class='rec-item'>"+t+"</p>"; }).join("")+"</div>";
+    }
+    if(!lacks.length){
+      html += "<div class='ok-box'>✅ 17 项微量营养素全部达标（≥70%），食材够多样，继续保持。</div>";
+    }
+    return html;
+  }
+
+  function renderMcList(){
+    var box = $("mcList"); if(!box) return;
+    var all = PLAN_MC.map(function(it){ return {it:it,i:-1}; }).concat(MC.map(function(it,i){ return {it:it,i:i}; }));
+    if(all.length===0){ box.innerHTML=""; return; }
+    box.innerHTML = all.map(function(o){
+      var it=o.it;
+      return "<span class='mc-chip"+(it.src==="plan"?" plan":"")+"'>"+it.name+" "+Math.round(it.grams)+"g"+
+        (o.i>=0?"<b class='mc-x' data-i='"+o.i+"'>×</b>":"")+"</span>";
+    }).join("");
+    box.querySelectorAll(".mc-x").forEach(function(b){
+      b.addEventListener("click", function(){
+        MC.splice(parseInt(b.getAttribute("data-i"),10),1);
+        renderMcList(); refreshMicro();
+      });
+    });
+  }
+  function refreshMicro(){ var o=$("microOut"); if(o) o.innerHTML = microReport(); }
+
+  function initMicro(){
+    renderMicroTarget();
+    var sel = $("mcFood");
+    if(sel){
+      sel.innerHTML = FOODS.map(function(f){ return "<option value='"+f.n+"'>"+f.n+"</option>"; }).join("");
+      $("mcAdd").addEventListener("click", function(){
+        var nm = sel.value, g = parseFloat($("mcGram").value)||0;
+        if(!nm || g<=0){ return; }
+        var ex = MC.filter(function(x){return x.name===nm;})[0];
+        if(ex){ ex.grams += g; } else { MC.push({name:nm, grams:g, src:"manual"}); }
+        renderMcList(); refreshMicro();
+      });
+      $("mcClear").addEventListener("click", function(){
+        MC = []; PLAN_MC = []; renderMcList(); refreshMicro();
+      });
+      $("mcGram").addEventListener("keydown", function(e){ if(e.key==="Enter") $("mcAdd").click(); });
+    }
+    renderMcList();
+    refreshMicro();
+  }
 
   /* ---------- 周备餐 ---------- */
   var pantry = []; // {name, grams, p,f,c,fi,unit,cat,src}
@@ -333,8 +494,8 @@
       else { prots.forEach(function(nm){ var fo=findFood(nm); var g=(tp/prots.length)/(fo.p/100); html+=planRow(m.name,"蛋白",nm,g); acc(nm,g*7); tally(fo,g*7); if(RED[nm]) redMeals++; }); }
       if(carbs.length===0){ html+="<tr><td>碳水</td><td>—</td><td>—</td><td>—</td><td class='warn'>⚠️ 未选碳水来源</td></tr>"; }
       else { carbs.forEach(function(nm){ var fo=findFood(nm); var g=(tc/carbs.length)/(fo.c/100); html+=planRow(m.name,"碳水",nm,g); acc(nm,g*7); tally(fo,g*7); }); }
-      if(vegs.length===0){ html+="<tr><td>蔬菜</td><td>—</td><td>—</td><td>—</td><td class='warn'>⚠️ 未选蔬菜（纤维可能不足）</td></tr>"; }
-      else { vegs.forEach(function(nm){ var fo=findFood(nm); var g=(tf/vegs.length)/(fo.fi/100); html+=planRow(m.name,"蔬菜",nm,g); tally(fo,g*7); }); }
+      if(vegs.length===0){ html+="<tr><td>蔬菜</td><td>—</td><td>—</td><td>—</td><td class='warn'>⚠️ 未选蔬菜（纤维+维生素可能不足）</td></tr>"; }
+      else { vegs.forEach(function(nm){ var fo=findFood(nm); var g=(tf/vegs.length)/(fo.fi/100); html+=planRow(m.name,"蔬菜",nm,g); acc(nm,g*7); tally(fo,g*7); }); }
     });
     html+="</tbody></table></div>";
 
@@ -373,8 +534,16 @@
       });
     }
     html += "</tbody></table></div>";
-    html += "<p class='note'>说明：分配按「目标平分给所选食材」的简便法，实际做饭可微调。蔬菜以满足纤维为目标；若某餐没勾蔬菜，系统已⚠️提示。所有克数按生重计，烹饪会失水约 25–40%，按生重买即可。</p>";
+
+    // 微量营养素：把本周食材折成日均，交给统一报告
+    PLAN_MC = Object.keys(shop).map(function(nm){ return {name:nm, grams: shop[nm].need/7, src:"plan"}; });
+    renderMcList();
+    html += "<h4 style='margin:18px 0 8px'>🧬 微量营养素（维生素 &amp; 矿物质，按日均）</h4>";
+    html += microReport();
+
+    html += "<p class='note'>说明：分配按「目标平分给所选食材」的简便法，实际做饭可微调。蔬菜以满足纤维为目标；若某餐只勾 1 种蔬菜，为了凑够纤维会算出很大克数（比如一天 1kg 西兰花），<b>建议每餐勾 2–3 种蔬菜轮换</b>，既好入口又能覆盖不同维生素。所有克数按生重计，烹饪会失水约 25–40%，按生重买即可。</p>";
     $("planOut").innerHTML = html;
+    refreshMicro();
   });
   function planRow(meal,cat,nm,g){
     var r = g*7;
@@ -448,4 +617,5 @@
   calc();
   convert();
   renderPantry();
+  initMicro();
 })();
