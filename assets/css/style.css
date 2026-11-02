@@ -180,6 +180,38 @@ main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
 .rec-box h4{margin:0 0 8px;color:#b9791a}
 .rec-item{margin:6px 0;color:#7a5a16;font-size:.9rem;line-height:1.65}
 
+/* ===== 微量营养素 ===== */
+.ftabs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ftab{background:#fff;border:1px solid var(--line);color:var(--muted);padding:7px 14px;border-radius:999px;font-size:.82rem;font-weight:600;cursor:pointer}
+.ftab.active{background:var(--c);border-color:var(--c);color:#fff}
+.th-u{font-weight:400;font-size:.68rem;color:var(--muted)}
+.food-tbl th{vertical-align:bottom}
+.food-tbl td.hi{background:#eaf7f1;color:#1f7a55;font-weight:700}
+
+.micro-tbl{border-collapse:collapse;width:100%;min-width:460px;font-size:.85rem}
+.micro-tbl th{background:#eef3f3;color:#37474a;padding:8px 10px;text-align:left;font-size:.78rem;white-space:nowrap}
+.micro-tbl td{padding:7px 10px;border-top:1px solid var(--line);vertical-align:middle}
+.micro-h{margin:14px 0 6px;font-size:.92rem;color:var(--ink)}
+.mini-h{margin:0 0 8px;font-size:.9rem;color:var(--c)}
+
+.pbar{width:96px;height:8px;background:#e8eeef;border-radius:999px;overflow:hidden}
+.pbar i{display:block;height:100%;border-radius:999px}
+.pb-ok{background:#2f8f5b}
+.pb-mid{background:#e0a33a}
+.pb-warn{background:#d9534f}
+td.mid{color:#c9821a;font-weight:700}
+
+.mc-ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.mc-ctrl select,.mc-ctrl input{padding:8px;border:1px solid var(--line);border-radius:8px;font-size:.92rem;color:var(--ink)}
+.mc-ctrl select{flex:1;min-width:170px}
+.mc-ctrl input{width:100px}
+.btn-mini.ghost{background:#fff;color:var(--muted);border:1px solid var(--line)}
+.mc-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.mc-chip{display:inline-flex;align-items:center;gap:6px;background:#eef7f2;border:1px solid #cfe8dc;color:#1f7a55;border-radius:999px;padding:4px 10px;font-size:.8rem}
+.mc-chip.plan{background:#eef4fb;border-color:#cfe0f2;color:#2b6ea8}
+.mc-x{cursor:pointer;font-weight:700;color:#c0504d;padding:0 2px}
+.ok-box{background:#eefaf3;border:1px solid #bfe6d2;border-radius:12px;padding:12px 14px;margin-top:12px;color:#1f7a55;font-size:.9rem}
+
 /* ===== 响应式 ===== */
 @media (max-width:560px){
   .grid-2{grid-template-columns:1fr}
@@ -190,4 +222,8 @@ main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
   .calc-grid{grid-template-columns:repeat(2,1fr)}
   .macro-cards{grid-template-columns:repeat(2,1fr)}
   .conv-grid{grid-template-columns:1fr}
+  .mc-ctrl select{min-width:100%}
+  .mc-ctrl input{flex:1}
+  .pbar{width:64px}
+  .micro-tbl{min-width:420px}
 }
