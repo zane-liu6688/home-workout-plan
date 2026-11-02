@@ -23,6 +23,7 @@
     <a href="#dayC">下肢C</a>
     <a href="#cardio">有氧</a>
     <a href="#nutrition">营养</a>
+    <a href="#prep">备餐</a>
     <a href="#principles">原则</a>
     <a href="#qa">答疑</a>
     <a href="#track">打卡</a>
@@ -293,46 +294,64 @@
 <!-- ============ 营养 ============ -->
 <section id="nutrition" class="sec">
   <h2>🍱 营养 · 维持量身体重组</h2>
-  <div class="grid-2">
-    <div class="card">
-      <h3>每日目标（按你的数据）</h3>
-      <ul class="kv">
-        <li><span>目标热量</span><b>2100–2300 kcal（维持量，不制造大缺口）</b></li>
-        <li><span>蛋白质</span><b>约 110–125 g/天</b>（瘦体重 50.9kg×2.2，或体重 63×1.8–2.0）</li>
-        <li><span>脂肪</span><b>约 50 g</b>（体重×0.8g，或热量 23%÷9）</li>
-        <li><span>碳水</span><b>剩余热量法</b>，训练量大就多吃，绝不断碳</li>
-        <li><span>膳食纤维</span><b>约 30 g</b>（热量÷1000×14）</li>
-        <li><span>饮水</span><b>约 2.2 L</b>，训练日 +0.5 L</li>
-      </ul>
+  <p class="lead">填好身体数据 → 自动算全天<strong>蛋白质 / 脂肪 / 碳水 / 热量</strong> → 拆成 <strong>早 25% · 午 35% · 晚 25% · 练后 15%</strong> 四餐。再用「食材库 + 一键换算」直接告诉你每餐吃多少克。</p>
+
+  <div class="card calc">
+    <h3>① 填身体数据 → 自动算全天营养</h3>
+    <div class="calc-grid">
+      <label>性别<select id="nSex"><option value="male" selected>男</option><option value="female">女</option></select></label>
+      <label>年龄<input type="number" id="nAge" value="22" min="14" max="90"></label>
+      <label>身高(cm)<input type="number" id="nH" value="176" min="140" max="210"></label>
+      <label>体重(kg)<input type="number" id="nW" value="63.3" step="0.1"></label>
+      <label>体脂率(%)<input type="number" id="nBf" value="14.6" step="0.1"></label>
+      <label>瘦体重(kg)<input type="number" id="nLbm" value="50.9" step="0.1"></label>
+      <label>活动系数<select id="nAct"><option value="1.2">久坐 1.2</option><option value="1.375" selected>轻-中 1.375</option><option value="1.55">中 1.55</option><option value="1.725">高 1.725</option></select></label>
+      <label>基础代谢BMR(kcal)<input type="number" id="nBmr" value="1534"></label>
     </div>
-    <div class="card">
-      <h3>三餐分配 & 要点</h3>
-      <ul class="bullet">
-        <li>早餐 25% ｜ 午餐 35% ｜ 晚餐 30% ｜ 加餐 10%。</li>
-        <li>每餐都要有蛋白：肉 / 鱼 / 蛋 / 奶 / 豆制品。</li>
-        <li>训练前后那两餐多压 30–50g 碳水。</li>
-        <li>戒酒 & 含糖饮料——腰腹囤脂最大推手。</li>
-        <li>示范：鸡胸 180g 生重 ≈ 40g 蛋白；无糖希腊酸奶 130g ≈ 12g 蛋白。</li>
-      </ul>
-      <p class="note">体脂秤易低估腹部脂肪，若连续 2 周体重/腰围无变化，每天热量先减 100–150 kcal（优先减碳水）。</p>
+    <div class="calc-actions">
+      <button id="btnBmr" class="btn-mini">↻ 按身高/体重重算 BMR</button>
+      <span class="hint">瘦体重默认=体重×(1−体脂率%)，可改；BMR 默认用你体脂秤数值，点按钮改由公式(Mifflin-St Jeor)估算。</span>
     </div>
   </div>
 
-  <div class="card calc">
-    <h3>🔢 蛋白质 / 热量速算（已按你预填，可改）</h3>
-    <div class="calc-row">
-      <label>体重(kg)<input type="number" id="cw" value="63.3" step="0.1"></label>
-      <label>瘦体重(kg)<input type="number" id="cl" value="50.9" step="0.1"></label>
-      <label>活动系数
-        <select id="cact">
-          <option value="1.375">轻活动 1.375</option>
-          <option value="1.55" selected>中强度 1.55</option>
-          <option value="1.725">高强度 1.725</option>
-        </select>
-      </label>
+  <div class="card">
+    <h3>② 每日营养素总目标</h3>
+    <div class="macro-cards" id="macroCards"></div>
+    <p class="note" id="macroFormula"></p>
+  </div>
+
+  <div class="card">
+    <h3>③ 四餐分配（早 25% / 午 35% / 晚 25% / 练后 15%）</h3>
+    <div class="table-wrap">
+      <table class="meal-tbl" id="mealTbl">
+        <thead><tr><th>餐次</th><th>占全天</th><th>热量(kcal)</th><th>蛋白(g)</th><th>脂肪(g)</th><th>碳水(g)</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </div>
-    <div class="calc-out" id="calcOut"></div>
-    <p class="note">公式：维持热量 = 基础代谢(取 1534) × 活动系数；蛋白 = 瘦体重 × 2.2（上限 2.5）。</p>
+    <p class="note">练后餐在训练后 30–60 分钟内吃；不训练当天把练后餐 15% 并入晚餐或当加餐。</p>
+  </div>
+
+  <div class="card">
+    <h3>④ 常见健身食材库（每 100g / 100ml，真实数据）</h3>
+    <input type="text" id="foodSearch" class="food-search" placeholder="搜索：鸡胸、三文鱼、燕麦、牛奶、西兰花…">
+    <div class="table-wrap">
+      <table class="food-tbl" id="foodTbl">
+        <thead><tr><th>食材</th><th>蛋白(g)</th><th>脂肪(g)</th><th>碳水(g)</th><th>纤维(g)</th><th>热量(kcal)</th><th>说明</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="note">数据来源：USDA FoodData Central 标准参考值（按生重/干重计；液体按 100ml）。包装食品以营养标签为准。没收录的用下面「周备餐」里的联网查 / 手动加。</p>
+  </div>
+
+  <div class="card calc">
+    <h3>⑤ 一键换算：本餐要 X 克营养 → 吃多少克食材</h3>
+    <div class="conv-grid">
+      <label>我要补<select id="convType"><option value="p">蛋白(g)</option><option value="c">碳水(g)</option><option value="f">脂肪(g)</option></select></label>
+      <label>目标克数<input type="number" id="convAmt" value="50" min="1"></label>
+      <label>选食材<select id="convFood"></select></label>
+    </div>
+    <div class="conv-out" id="convOut"></div>
+    <p class="note">例：练后餐要 50g 蛋白，选「鸡胸肉(生)」→ 约 222g 鸡胸（含蛋白 50g、脂肪约 6g、热量约 266kcal）。下方同时列出该份附带的其它营养，方便配平。</p>
   </div>
 </section>
 
@@ -389,6 +408,56 @@
   <div id="week-progress" class="progress-card"></div>
   <div id="track-week" class="track-week"></div>
   <button id="resetTrack" class="btn-ghost">清空本周打卡</button>
+</section>
+
+<!-- ============ 周备餐 ============ -->
+<section id="prep" class="sec">
+  <h2>🥡 周备餐 · 一次买够一周、按餐分配</h2>
+  <p class="lead">把这一周要吃的食材加进来（从库里选，或联网查/手动加），系统按你每餐的需求自动分配<strong>早/午/晚/练后</strong>各做多少克，不够就黄色⚠️提示差多少，最后汇成<strong>一周采购清单</strong>。</p>
+
+  <div class="card">
+    <h3>⑥-1 我的食材（本周采购）</h3>
+    <div class="pantry-add">
+      <select id="pantrySel"></select>
+      <label>本周买了多少克(g)<input type="number" id="pantryG" value="500" min="0"></label>
+      <button id="pantryAdd" class="btn-mini">＋ 加入</button>
+    </div>
+    <div class="pantry-tools">
+      <button id="offSearch" class="btn-mini">🔍 联网查(Open Food Facts)</button>
+      <button id="manualAdd" class="btn-mini">✏️ 手动加(按包装标签)</button>
+    </div>
+    <div id="offBox" class="off-box" style="display:none">
+      <input type="text" id="offName" placeholder="食材名，如 tofu / 鸡胸 / 鸡蛋">
+      <button id="offGo" class="btn-mini">查询</button>
+      <span id="offMsg" class="hint"></span>
+    </div>
+    <div id="manualBox" class="off-box" style="display:none">
+      <input type="text" id="mName" placeholder="名称">
+      <input type="number" id="mP" placeholder="蛋白/100g">
+      <input type="number" id="mF" placeholder="脂肪/100g">
+      <input type="number" id="mC" placeholder="碳水/100g">
+      <input type="number" id="mFi" placeholder="纤维/100g">
+      <button id="mGo" class="btn-mini">添加</button>
+    </div>
+    <div class="table-wrap" style="margin-top:12px">
+      <table class="pantry-tbl" id="pantryTbl">
+        <thead><tr><th>食材</th><th>类别</th><th>本周库存(g)</th><th>每100g营养(蛋/脂/碳/纤)</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>⑥-2 每餐分配（勾选该餐用哪些食材）</h3>
+    <p class="note">系统把该餐的蛋白目标平分给勾选的蛋白食材、碳水目标平分给碳水食材、纤维目标平分给蔬菜；再 ×7 得一周量。库存不够会⚠️。</p>
+    <div id="mealPlanners"></div>
+    <button id="planCalc" class="btn-mini" style="margin-top:8px">▶ 计算分配</button>
+  </div>
+
+  <div class="card">
+    <h3>⑥-3 分配结果 & 一周采购清单</h3>
+    <div id="planOut"><p class="hint">先在 ⑥-1 加入食材、在 ⑥-2 勾选每餐食材，再点「计算分配」。</p></div>
+  </div>
 </section>
 
 <footer class="foot">
