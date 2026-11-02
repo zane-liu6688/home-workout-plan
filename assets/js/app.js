@@ -321,20 +321,43 @@
     if(!lastResult){ alert("请先填写上方身体数据并算好营养目标"); return; }
     if(pantry.length===0){ $("planOut").innerHTML="<p class='hint'>请先在 ⑥-1 加入本周食材。</p>"; return; }
     var R = lastResult;
+    var RED = { "瘦牛肉(生)":1, "牛里脊(生)":1, "猪里脊(生)":1 };
     var html = '<div class="table-wrap"><table class="plan-tbl"><thead><tr><th>餐次</th><th>类别</th><th>食材</th><th>每餐(g)</th><th>每周(g)</th><th>状态</th></tr></thead><tbody>';
-    var shop = {};
+    var shop = {}; var act = {p:0,f:0,c:0,fi:0}; var redMeals = 0;
     function acc(name, weeklyG){ if(!shop[name]) shop[name]={need:0}; shop[name].need += weeklyG; }
+    function tally(fo, weeklyG){ act.p += fo.p/100*weeklyG; act.f += fo.f/100*weeklyG; act.c += fo.c/100*weeklyG; act.fi += fo.fi/100*weeklyG; }
     MEALS.forEach(function(m){
       var tp=R.prot*m.pct, tc=R.carb*m.pct, tf=R.fiber*m.pct;
       var prots=checkedFor(m.name,"protein"), carbs=checkedFor(m.name,"carb"), vegs=checkedFor(m.name,"veg");
       if(prots.length===0){ html+="<tr><td rowspan='1'><b>"+m.name+"</b></td><td>蛋白</td><td>—</td><td>—</td><td>—</td><td class='warn'>⚠️ 未选蛋白来源</td></tr>"; }
-      else { prots.forEach(function(nm){ var g=(tp/prots.length)/(findFood(nm).p/100); html+=planRow(m.name,"蛋白",nm,g); acc(nm,g*7); }); }
+      else { prots.forEach(function(nm){ var fo=findFood(nm); var g=(tp/prots.length)/(fo.p/100); html+=planRow(m.name,"蛋白",nm,g); acc(nm,g*7); tally(fo,g*7); if(RED[nm]) redMeals++; }); }
       if(carbs.length===0){ html+="<tr><td>碳水</td><td>—</td><td>—</td><td>—</td><td class='warn'>⚠️ 未选碳水来源</td></tr>"; }
-      else { carbs.forEach(function(nm){ var g=(tc/carbs.length)/(findFood(nm).c/100); html+=planRow(m.name,"碳水",nm,g); acc(nm,g*7); }); }
+      else { carbs.forEach(function(nm){ var fo=findFood(nm); var g=(tc/carbs.length)/(fo.c/100); html+=planRow(m.name,"碳水",nm,g); acc(nm,g*7); tally(fo,g*7); }); }
       if(vegs.length===0){ html+="<tr><td>蔬菜</td><td>—</td><td>—</td><td>—</td><td class='warn'>⚠️ 未选蔬菜（纤维可能不足）</td></tr>"; }
-      else { vegs.forEach(function(nm){ var g=(tf/vegs.length)/(findFood(nm).fi/100); html+=planRow(m.name,"蔬菜",nm,g); }); }
+      else { vegs.forEach(function(nm){ var fo=findFood(nm); var g=(tf/vegs.length)/(fo.fi/100); html+=planRow(m.name,"蔬菜",nm,g); tally(fo,g*7); }); }
     });
     html+="</tbody></table></div>";
+
+    // 本周实际 vs 目标
+    var twP=R.prot*7, twC=R.carb*7, twF=R.fat*7, twFi=R.fiber*7;
+    html += "<h4 style='margin:16px 0 8px'>📊 本周实际 vs 目标（按你勾选的分配）</h4>";
+    html += "<div class='table-wrap'><table class='shop-tbl'><thead><tr><th>营养素</th><th>实际(周)</th><th>目标(周)</th><th>状态</th></tr></thead><tbody>";
+    html += diffRow("蛋白质(g)", act.p, twP) + diffRow("脂肪(g)", act.f, twF) + diffRow("碳水(g)", act.c, twC) + diffRow("膳食纤维(g)", act.fi, twFi);
+    html += "</tbody></table></div>";
+
+    // 短缺预警 + 推荐补救
+    var recs = [];
+    if(act.p < twP*0.95){
+      var deficit = twP-act.p;
+      var recFood = (redMeals<2) ? "瘦牛肉(生)" : "鸡胸肉(生,去皮)";
+      var fo = findFood(recFood); var needG = deficit/(fo.p/100);
+      recs.push("蛋白质还差 <b>"+Math.round(deficit)+"g</b>。"+(redMeals<2?"你这周红肉偏少（白肉为主），":"")+"建议补 <b>"+recFood+" 约 "+Math.round(needG)+"g</b>（红肉为辅，一周 2–3 餐补铁补锌）。");
+    }
+    if(act.f < twF*0.95){ var dF=twF-act.f; var ng=dF/(findFood("花生酱").f/100); recs.push("脂肪还差 <b>"+Math.round(dF)+"g</b>。建议补 <b>花生酱 约 "+Math.round(ng)+"g</b> 或 橄榄油。"); }
+    if(act.c < twC*0.95){ var dC=twC-act.c; var ng2=dC/(findFood("燕麦(干)").c/100); recs.push("碳水还差 <b>"+Math.round(dC)+"g</b>。建议补 <b>燕麦(干) 约 "+Math.round(ng2)+"g</b> 或 米饭/红薯。"); }
+    if(act.fi < twFi*0.95){ var dFi=twFi-act.fi; var ng3=dFi/(findFood("西兰花(生)").fi/100); recs.push("膳食纤维还差 <b>"+Math.round(dFi)+"g</b>。建议多加 <b>西兰花 约 "+Math.round(ng3)+"g</b>（或菠菜/胡萝卜），蔬菜要多样化。"); }
+    if(redMeals<2){ recs.push("⚠️ 本周红肉餐数仅 <b>"+redMeals+"</b> 餐。科学搭配：白肉(鸡/鱼)为主、红肉为辅，建议一周安排 <b>2–3 餐红肉</b>（牛肉/猪里脊）补铁补锌，蛋白补足里已给克数。"); }
+    if(recs.length){ html += "<div class='rec-box'><h4>💡 短缺预警 & 推荐补救</h4>"+recs.map(function(r){return "<p class='rec-item'>⚠️ "+r+"</p>";}).join("")+"</div>"; }
 
     // 一周采购清单
     html += "<h4 style='margin:16px 0 8px'>🛒 一周采购清单（按此买够 7 天）</h4>";
@@ -357,6 +380,54 @@
     var r = g*7;
     return "<tr><td><b>"+meal+"</b></td><td>"+cat+"</td><td>"+nm+"</td><td>"+Math.round(g)+"</td><td>"+Math.round(r)+"</td><td class='ok'>✅ 达标</td></tr>";
   }
+  function diffRow(name, act, target){
+    var ok = act>=target*0.95; var pct = target>0?Math.round(act/target*100):0;
+    return "<tr><td><b>"+name+"</b></td><td>"+Math.round(act)+"</td><td>"+Math.round(target)+"</td><td class='"+(ok?"ok":"warn")+"'>"+(ok?("✅ "+pct+"%"):("⚠️ 缺 "+Math.round(target-act)+"g"))+"</td></tr>";
+  }
+
+  /* ---------- 智能推荐：一周采购 ---------- */
+  function buildSuggestion(R){
+    var protW=R.prot*7, carbW=R.carb*7, fatW=R.fat*7, fiberW=R.fiber*7;
+    var out = [];
+    var protSplit = [
+      {n:"鸡胸肉(生,去皮)", s:0.42, note:"白肉主力，低脂高蛋白"},
+      {n:"三文鱼(生)", s:0.18, note:"鱼肉，补 Omega-3"},
+      {n:"瘦牛肉(生)", s:0.15, note:"红肉为辅，补铁锌，一周约2–3餐"},
+      {n:"鸡蛋(全蛋)", s:0.13, note:"早餐优质蛋白"},
+      {n:"无糖希腊酸奶", s:0.12, note:"奶制品，补钙"}
+    ];
+    var fatFromP=0;
+    protSplit.forEach(function(x){
+      var fo=findFood(x.n); var g=(protW*x.s)/(fo.p/100);
+      out.push({name:x.n, grams:Math.round(g), cat:fo.cat, note:x.note});
+      fatFromP += fo.f/100*g;
+    });
+    var carbSplit=[{n:"燕麦(干)", s:0.28, note:"早餐慢碳"},{n:"白米饭(熟)", s:0.57, note:"午晚餐主食"},{n:"红薯(蒸)", s:0.15, note:"优质碳水+纤维"}];
+    carbSplit.forEach(function(x){ var fo=findFood(x.n); var g=(carbW*x.s)/(fo.c/100); out.push({name:x.n, grams:Math.round(g), cat:fo.cat, note:x.note}); });
+    var fatNeed = Math.max(0, fatW - fatFromP);
+    if(fatNeed>10){ var pb=findFood("花生酱"); out.push({name:"花生酱", grams:Math.round(fatNeed/(pb.f/100)), cat:"fat", note:"补健康脂肪"}); }
+    var vegSplit=[{n:"西兰花(生)",s:0.4},{n:"菠菜(生)",s:0.35},{n:"番茄",s:0.25}];
+    vegSplit.forEach(function(x){ var fo=findFood(x.n); var g=(fiberW*x.s)/(fo.fi/100); out.push({name:x.n, grams:Math.round(g), cat:"veg", note:"蔬菜多样，补纤维维生素"}); });
+    out.push({name:"牛奶(全脂)", grams:1750, cat:"protein", note:"每天约250ml，补钙"});
+    return out;
+  }
+  $("suggestBtn").addEventListener("click", function(){
+    if(!lastResult) calc();
+    if(!lastResult){ alert("请先填写上方身体数据"); return; }
+    var list = buildSuggestion(lastResult);
+    var html = "<p class='note'>按你的目标自动生成，原则：<b>白肉(鸡/鱼)为主、红肉(牛/猪)为辅(一周2–3餐)、蛋奶搭配、蔬菜3样轮换、碳水以燕麦+米饭+红薯</b>。可直接「采用」填入下方食材库再算分配。</p>";
+    html += "<div class='table-wrap'><table class='shop-tbl'><thead><tr><th>推荐食材</th><th>本周买(g)</th><th>类别</th><th>说明</th></tr></thead><tbody>";
+    list.forEach(function(it){ html+="<tr><td><b>"+it.name+"</b></td><td>"+it.grams+"</td><td>"+CAT_TXT[it.cat]+"</td><td class='muted'>"+it.note+"</td></tr>"; });
+    html += "</tbody></table></div>";
+    html += "<button id='adoptSuggest' class='btn-mini' style='margin-top:8px'>✅ 采用并填入我的食材库</button>";
+    $("suggestOut").innerHTML = html;
+    var adopt = $("adoptSuggest");
+    if(adopt){ adopt.addEventListener("click", function(){
+      list.forEach(function(it){ var exist=pantry.filter(function(p){return p.name===it.name;})[0]; var fo=findFood(it.name); if(exist){ exist.grams+=it.grams; } else { pantry.push({name:it.name,grams:it.grams,p:fo.p,f:fo.f,c:fo.c,fi:fo.fi,unit:fo.unit,cat:fo.cat,src:"suggest"}); } });
+      renderPantry();
+      document.getElementById("prep").scrollIntoView({behavior:"smooth"});
+    }); }
+  });
 
   /* ---------- 导航高亮 ---------- */
   var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav a"));
