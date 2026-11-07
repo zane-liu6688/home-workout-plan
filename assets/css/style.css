@@ -266,7 +266,23 @@ td.mid{color:#c9821a;font-weight:700}
 .pel-cell .n{font-size:.95rem;margin-top:3px}
 .pelvis-progress{margin-top:9px;font-size:.87rem;color:var(--muted)}
 
+/* ===== 目标档位 / 地形表 / 折叠卡片 / 热身打卡 ===== */
+.mode-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;background:#f0f4f5;border-radius:10px}
+.mode-bar label{display:flex;align-items:center;gap:6px;font-size:.87rem}
+.mode-bar select,.mode-bar input{padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:#fff;font:inherit;color:var(--ink)}
+.mode-bar input{width:88px}
+.mode-bar .hint{flex:1 1 220px}
+.ok-cell{color:#1d7a4d;background:#f1faf5;font-weight:600}
+.warn-cell{color:#9a6410;background:#fff7e8;font-weight:600}
+.fold-card{border:1px solid var(--line);border-radius:12px;background:var(--card);margin:12px 0;overflow:hidden}
+.fold-card summary{cursor:pointer;padding:13px 15px;font-weight:600;list-style:none}
+.fold-card summary::-webkit-details-marker{display:none}
+.fold-body{padding:0 15px 14px;border-top:1px solid var(--line)}
+.warm-cell.done{background:#eaf4fb;border-color:#378add;color:#185fa5}
+
 @media (max-width:560px){
+  .mode-bar{gap:8px}
+  .mode-bar .hint{flex-basis:100%}
   .stage-tbl{font-size:.76rem}
   .stage-tbl th,.stage-tbl td{padding:6px 5px}
   .stage-time{margin-left:0;width:100%}
