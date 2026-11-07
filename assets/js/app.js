@@ -85,8 +85,42 @@
       persistWeek();
       document.querySelectorAll(".tw-day").forEach(function(d){ d.classList.remove("done"); var n=d.querySelector(".n"); if(n && n.textContent!=="—") n.textContent="○"; });
       renderProgress();
+      pelvisData[key] = {};
+      persistPelvis();
+      document.querySelectorAll(".pel-cell").forEach(function(c){ c.classList.remove("done"); var n=c.querySelector(".n"); if(n) n.textContent="○"; });
+      renderPelvis();
     });
   }
+
+  /* ---------- 骨盆纠正：每天 5 分钟打卡 ---------- */
+  var LS_PELVIS = "hwp_pelvis_v1";
+  var pelvisData = {};
+  try { pelvisData = JSON.parse(localStorage.getItem(LS_PELVIS) || "{}"); } catch(e){ pelvisData = {}; }
+  if(!pelvisData[key]) pelvisData[key] = {};
+  function persistPelvis(){ try{ localStorage.setItem(LS_PELVIS, JSON.stringify(pelvisData)); }catch(e){} }
+  var pelvisBox = document.getElementById("pelvisWeek");
+  var pelvisProg = document.getElementById("pelvisProgress");
+  function renderPelvis(){
+    if(!pelvisProg) return;
+    var n=0; for(var i=0;i<7;i++){ if(pelvisData[key][i]) n++; }
+    pelvisProg.textContent = "本周骨盆纠正：" + n + " / 7 天";
+  }
+  if(pelvisBox){
+    DAY_LABEL.forEach(function(lbl,i){
+      var cell = document.createElement("div");
+      cell.className = "pel-cell" + (i===idx?" today":"") + (pelvisData[key][i]?" done":"");
+      cell.innerHTML = '<div class="d">'+lbl+'</div><div class="n">'+(pelvisData[key][i]?"✓":"○")+'</div>';
+      cell.addEventListener("click", function(){
+        pelvisData[key][i] = !pelvisData[key][i];
+        persistPelvis();
+        cell.classList.toggle("done", pelvisData[key][i]);
+        cell.querySelector(".n").textContent = pelvisData[key][i]?"✓":"○";
+        renderPelvis();
+      });
+      pelvisBox.appendChild(cell);
+    });
+  }
+  renderPelvis();
 
   /* ---------- 营养：身体数据 → 全天营养 → 四餐 → 食材换算 → 周备餐 ---------- */
   /* 微量营养素字段顺序(每100g/100ml)：
@@ -618,4 +652,26 @@
   convert();
   renderPantry();
   initMicro();
+  /* ---------- 阶段进阶：标记当前阶段（本地保存） ---------- */
+  var LS_STAGE = "hwp_stage_v1";
+  var stageSel = document.getElementById("stageNow");
+  var stageHint = document.getElementById("stageHint");
+  function applyStage(v){
+    var all = document.querySelectorAll(".stage");
+    all.forEach(function(d){ d.classList.remove("current"); });
+    var cur = document.getElementById("stage"+v);
+    if(cur){ cur.classList.add("current"); cur.open = true; }
+    if(stageHint) stageHint.textContent = "已标记 S"+v+"，高亮展开的卡片就是你现在该练的这一级。";
+  }
+  if(stageSel){
+    var sv = "1";
+    try{ sv = localStorage.getItem(LS_STAGE) || "1"; }catch(e){}
+    stageSel.value = sv;
+    applyStage(sv);
+    stageSel.addEventListener("change", function(){
+      try{ localStorage.setItem(LS_STAGE, stageSel.value); }catch(e){}
+      applyStage(stageSel.value);
+    });
+  }
+
 })();
