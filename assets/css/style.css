@@ -310,3 +310,6 @@ td.mid{color:#c9821a;font-weight:700}
   .io-body{padding:6px 12px 10px}
   .io-list{font-size:.82rem;padding-left:18px}
 }
+
+/* ===== 训练日收尾有氧卡 ===== */
+.io-cardio>summary{background:#eef8f3}
