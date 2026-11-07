@@ -87,8 +87,11 @@
       renderProgress();
       pelvisData[key] = {};
       persistPelvis();
+      warmData[key] = {};
+      persistWarm();
       document.querySelectorAll(".pel-cell").forEach(function(c){ c.classList.remove("done"); var n=c.querySelector(".n"); if(n) n.textContent="○"; });
       renderPelvis();
+      renderWarm();
     });
   }
 
@@ -121,6 +124,36 @@
     });
   }
   renderPelvis();
+
+  /* ---------- 热身 + 拉伸：每天打卡 ---------- */
+  var LS_WARM = "hwp_warm_v1";
+  var warmData = {};
+  try { warmData = JSON.parse(localStorage.getItem(LS_WARM) || "{}"); } catch(e){ warmData = {}; }
+  if(!warmData[key]) warmData[key] = {};
+  function persistWarm(){ try{ localStorage.setItem(LS_WARM, JSON.stringify(warmData)); }catch(e){} }
+  var warmBox = document.getElementById("warmWeek");
+  var warmProg = document.getElementById("warmProgress");
+  function renderWarm(){
+    if(!warmProg) return;
+    var n=0; for(var i=0;i<7;i++){ if(warmData[key][i]) n++; }
+    warmProg.textContent = "本周热身＋拉伸：" + n + " / 7 天";
+  }
+  if(warmBox){
+    DAY_LABEL.forEach(function(lbl,i){
+      var cell = document.createElement("div");
+      cell.className = "pel-cell warm-cell" + (i===idx?" today":"") + (warmData[key][i]?" done":"");
+      cell.innerHTML = '<div class="d">'+lbl+'</div><div class="n">'+(warmData[key][i]?"✓":"○")+'</div>';
+      cell.addEventListener("click", function(){
+        warmData[key][i] = !warmData[key][i];
+        persistWarm();
+        cell.classList.toggle("done", warmData[key][i]);
+        cell.querySelector(".n").textContent = warmData[key][i]?"✓":"○";
+        renderWarm();
+      });
+      warmBox.appendChild(cell);
+    });
+  }
+  renderWarm();
 
   /* ---------- 营养：身体数据 → 全天营养 → 四餐 → 食材换算 → 周备餐 ---------- */
   /* 微量营养素字段顺序(每100g/100ml)：
@@ -220,39 +253,50 @@
   nBf.addEventListener("input", function(){ autoLbm(); calc(); });
   nW.addEventListener("input", function(){ autoLbm(); calc(); });
   $("btnBmr").addEventListener("click", function(){ var b=mifflin(); if(b){ nBmr.value=b; } calc(); });
-  [nSex,nAge,nH,nAct,nBmr,nLbm].forEach(function(el){ el.addEventListener("input", calc); el.addEventListener("change", calc); });
+  [nSex,nAge,nH,nAct,nBmr,nLbm,$("nMode"),$("nDeficit")].forEach(function(el){ if(!el) return; el.addEventListener("input", calc); el.addEventListener("change", calc); });
 
   var lastResult = null;
+  var nMode = $("nMode"), nDeficit = $("nDeficit");
   function calc(){
     var w=parseFloat(nW.value)||0, lbm=parseFloat(nLbm.value)||0, act=parseFloat(nAct.value)||1.375, bmr=parseFloat(nBmr.value)||0;
     if(!w||!lbm||!bmr){ return; }
     var maint = Math.round(bmr*act);
-    var prot = Math.round(lbm*2.2);
+    var mode = nMode ? nMode.value : "cut";
+    var dv = nDeficit ? parseFloat(nDeficit.value) : NaN;
+    var deficit = mode==="cut" ? Math.max(0, Math.min(600, isNaN(dv)?250:dv)) : 0;
+    var target = Math.round(maint - deficit);
+    var prot = Math.round(lbm*(mode==="cut"?2.4:2.2));
     prot = Math.max(Math.round(w*1.6), Math.min(prot, Math.round(lbm*2.6)));
     var fat = Math.round(w*0.8);
-    var carbCal = maint - prot*4 - fat*9;
+    var carbCal = target - prot*4 - fat*9;
     var carb = carbCal>0 ? Math.round(carbCal/4) : 0;
-    var fiber = Math.max(25, Math.round(maint/1000*14));
+    var fiber = Math.max(25, Math.round(target/1000*14));
     var water = Math.round(w*35)/1000;
+    var modeTxt = mode==="cut" ? ("小缺口 −"+deficit+" kcal/天") : "维持量 · 无缺口";
 
     $("macroCards").innerHTML =
-      card("热量(维持量)", maint, "kcal", "不制造大缺口，身体重组") +
-      card("蛋白质", prot, "g", "瘦体重×2.2，约"+Math.round(prot*4)+"kcal") +
+      card("目标热量", target, "kcal", modeTxt) +
+      card("蛋白质", prot, "g", (mode==="cut"?"瘦体重×2.4":"瘦体重×2.2")+"，约"+Math.round(prot*4)+"kcal") +
       card("脂肪", fat, "g", "体重×0.8，约"+Math.round(fat*9)+"kcal") +
       card("碳水", carb, "g", "剩余热量，约"+Math.round(carb*4)+"kcal") +
       card("膳食纤维", fiber, "g", "热量÷1000×14") +
       card("饮水", water, "L", "训练日 +0.5L");
 
-    $("macroFormula").textContent = "计算链：维持热量 = BMR("+bmr+") × 活动系数("+act+") = "+maint+" kcal ｜ 蛋白 = 瘦体重("+lbm+"kg)×2.2 = "+prot+"g ｜ 脂肪 = 体重("+w+"kg)×0.8 = "+fat+"g ｜ 碳水 = (维持−蛋白×4−脂肪×9)÷4 = "+carb+"g。";
+    var mh = $("modeHint");
+    if(mh){
+      mh.textContent = mode==="cut"
+        ? "维持 "+maint+" kcal → 目标 "+target+" kcal（缺口 "+deficit+"）。每周体重降幅控制在 0.25–0.5% 以内；蛋白按 1.8–2.2 g/kg 给足。"
+        : "维持 "+maint+" kcal，不制造缺口；适合状态不稳或想先适应训练的阶段。";
+    }
+    $("macroFormula").textContent = "计算链：维持热量 = BMR("+bmr+") × 活动系数("+act+") = "+maint+" kcal ｜ "+modeTxt+" → 目标 "+target+" kcal ｜ 蛋白 = 瘦体重("+lbm+"kg)×"+(mode==="cut"?"2.4":"2.2")+" = "+prot+"g ｜ 脂肪 = 体重("+w+"kg)×0.8 = "+fat+"g ｜ 碳水 = (目标−蛋白×4−脂肪×9)÷4 = "+carb+"g。";
 
     var tb = $("mealTbl").querySelector("tbody");
     tb.innerHTML = MEALS.map(function(m){
-      var cal=Math.round(maint*m.pct), p=Math.round(prot*m.pct), f=Math.round(fat*m.pct), c=Math.round(carb*m.pct);
+      var cal=Math.round(target*m.pct), p=Math.round(prot*m.pct), f=Math.round(fat*m.pct), c=Math.round(carb*m.pct);
       return "<tr><td><b>"+m.name+"</b></td><td>"+Math.round(m.pct*100)+"%</td><td>"+cal+"</td><td>"+p+"</td><td>"+f+"</td><td>"+c+"</td></tr>";
     }).join("");
 
-    lastResult = {maint:maint,prot:prot,fat:fat,carb:carb,fiber:fiber,water:water};
-    // 若备餐板块已建好，刷新默认目标提示
+    lastResult = {maint:maint,target:target,mode:mode,deficit:deficit,prot:prot,fat:fat,carb:carb,fiber:fiber,water:water};
   }
   function card(t,v,u,sub){
     return '<div class="mcard"><div class="m-t">'+t+'</div><div class="m-v">'+v+'<span class="m-u">'+u+'</span></div><div class="m-s">'+sub+'</div></div>';
