@@ -289,3 +289,24 @@ td.mid{color:#c9821a;font-weight:700}
   .pel-cell{font-size:.7rem;padding:6px 1px}
   .pelvis-week{gap:4px}
 }
+
+/* ===== 每日热身 / 拉伸（嵌在 A/B/C 板块内）===== */
+.day-io{border:1px solid var(--line);border-radius:12px;background:var(--card);margin:12px 0;overflow:hidden;box-shadow:var(--shadow)}
+.day-io>summary{cursor:pointer;padding:11px 14px;font-weight:700;font-size:.9rem;list-style:none;border-bottom:1px solid var(--line)}
+.day-io:not([open])>summary{border-bottom:0}
+.day-io>summary::-webkit-details-marker{display:none}
+.day-io>summary::after{content:"点击收起";float:right;font-size:.72rem;font-weight:400;color:var(--muted)}
+.day-io:not([open])>summary::after{content:"点击展开"}
+.io-warm>summary{background:#fff5ef}
+.io-stretch>summary{background:#eef6fb}
+.io-body{padding:8px 14px 12px}
+.io-list{margin:6px 0 4px;padding-left:20px;font-size:.87rem;line-height:1.62}
+.io-list li{padding:4px 0}
+.io-list li::marker{color:var(--accent);font-weight:700}
+.io-note{margin:6px 0 2px;font-size:.8rem;color:var(--muted);line-height:1.6}
+@media (max-width:560px){
+  .day-io>summary{font-size:.83rem;padding:10px 12px}
+  .day-io>summary::after{display:none}
+  .io-body{padding:6px 12px 10px}
+  .io-list{font-size:.82rem;padding-left:18px}
+}
