@@ -320,3 +320,7 @@ td.mid{color:#c9821a;font-weight:700}
 .tension-rule .bullet{margin:8px 0 6px;padding-left:20px;font-size:.87rem;line-height:1.75}
 .tier-return>summary{background:#f4f4f6;color:#5a5a63}
 .tier-return .io-list li::marker{color:#8a8a92}
+
+/* ===== 蛋白档位说明 ===== */
+.prot-hint{background:#eef8f3;border-left:3px solid var(--accent);font-size:.86rem;line-height:1.75;margin:0 0 12px;padding:10px 12px}
+.prot-hint b{color:var(--ink)}

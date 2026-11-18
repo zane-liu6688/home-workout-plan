@@ -61,7 +61,7 @@
 
   <div class="card goal">
     <h3>🎯 总目标：小缺口身体重组（不追体重数字）</h3>
-    <p>做<strong>身体重组</strong>：每日<strong>小缺口 200–300 kcal</strong>（约 1900–2100 kcal，别超 500）+ <strong>高蛋白 1.8–2.2 g/kg</strong> + 力量训练为主，配合每个训练日收尾的低冲击有氧把每周总量做够。让脂肪慢慢掉、肌肉尽量保住甚至长一点，<b>每周体重降幅控制在 0.25–0.5% 以内</b>。</p>
+    <p>做<strong>身体重组</strong>：每日<strong>小缺口 200–300 kcal</strong>（约 1900–2100 kcal，别超 500）+ <strong>高蛋白：体重口径 1.6–2.2 g/kg ≈ 瘦体重口径 2.0–3.1 g/kg</strong>（本工具按瘦体重算，随体脂自动分档） + 力量训练为主，配合每个训练日收尾的低冲击有氧把每周总量做够。让脂肪慢慢掉、肌肉尽量保住甚至长一点，<b>每周体重降幅控制在 0.25–0.5% 以内</b>。</p>
     <p>新手 + 高蛋白 + 规律力量训练，是少数能「同时减脂又增肌」的窗口期（约 6–12 个月）。缺口拉太大反而会浪费它：掉肌肉、恢复变差、力量上不去。</p>
     <p class="rule">⛳ <strong>训练原则</strong>：循序渐进、动作标准、不过度，以练完舒适、第二天能恢复为底线。进度看腰围和体脂趋势，别只盯体重秤。</p>
   </div>
@@ -689,6 +689,7 @@
       <label>瘦体重(kg)<input type="number" id="nLbm" value="50.9" step="0.1"></label>
       <label>活动系数<select id="nAct"><option value="1.2">久坐 1.2</option><option value="1.375" selected>轻-中 1.375</option><option value="1.55">中 1.55</option><option value="1.725">高 1.725</option></select></label>
       <label>基础代谢BMR(kcal)<input type="number" id="nBmr" value="1534"></label>
+      <label>蛋白系数(留空=自动)<input type="number" id="protFactor" min="1.6" max="3.2" step="0.1" placeholder="自动"></label>
     </div>
     <div class="mode-bar">
       <label>目标档
@@ -702,12 +703,13 @@
     </div>
     <div class="calc-actions">
       <button id="btnBmr" class="btn-mini">↻ 按身高/体重重算 BMR</button>
-      <span class="hint">瘦体重默认=体重×(1−体脂率%)，可改；BMR 默认用你体脂秤数值，点按钮改由公式(Mifflin-St Jeor)估算。</span>
+      <span class="hint">体脂率、体重、瘦体重变化后会自动重算营养目标；蛋白系数按体脂率分档（<b>偏瘦 &lt;15% → 2.4/2.2；常规 15–20% → 2.2/2.0；偏高 &gt;20% → 2.0/1.8</b>，减脂档/维持档），也可手动填系数覆盖。BMR 点按钮改由 Mifflin-St Jeor 估算。</span>
     </div>
   </div>
 
   <div class="card">
     <h3>② 每日营养素总目标</h3>
+    <div class="card prot-hint" id="protHint"></div>
     <div class="macro-cards" id="macroCards"></div>
     <p class="note" id="macroFormula"></p>
   </div>

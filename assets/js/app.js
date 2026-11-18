@@ -176,7 +176,7 @@
     {n:"牛奶(全脂)",cat:"protein",p:3.2,f:3.6,c:4.8,fi:0,k:61,unit:"ml",note:"每100ml，补钙主力",mi:[46,1.3,0.07,0.3,0.02,0.17,0.09,0.04,0.45,5,0.9,113,0.03,0.4,10,3.7,132]},
     {n:"无糖希腊酸奶",cat:"protein",p:10,f:0.4,c:3.6,fi:0,k:59,unit:"g",note:"选无糖，钙高",mi:[1,0.1,0.01,0.2,0.02,0.28,0.2,0.06,0.75,7,0,110,0.04,0.5,11,9.7,141]},
     {n:"北豆腐(硬)",cat:"protein",p:17.3,f:8.7,c:2.8,fi:0.4,k:144,unit:"g",note:"植物蛋白+钙",mi:[0,0,0.4,2.0,0.08,0.05,0.1,0.05,0,15,0,138,5.4,0.8,30,8.9,121]},
-    {n:"毛豆(熟)",cat:"protein",p:13,f:6,c:11,fi:4,k:140,unit:"g",note:"植物蛋白+叶酸",mi:[9,0,0.68,26.8,0.2,0.15,1.6,0.1,0,165,6,63,2.3,1.4,64,1.5,436]},
+    {n:"毛豆(熟)",cat:"protein",p:11.5,f:7.6,c:8.6,fi:5,k:140,unit:"g",note:"植物蛋白+叶酸",mi:[9,0,0.68,26.8,0.2,0.15,1.6,0.1,0,165,6,63,2.3,1.4,64,1.5,436]},
     {n:"乳清蛋白粉",cat:"protein",p:80,f:6,c:8,fi:0,k:400,unit:"g",note:"一勺约30g=24g蛋白",mi:[0,0,0,0,0.1,1.5,1.0,1.0,1.5,10,0,500,1.5,3.0,50,20,500]},
     // 碳水来源
     {n:"燕麦(干)",cat:"carb",p:17,f:7,c:66,fi:10,k:379,unit:"g",note:"慢碳，煮前称重",mi:[0,0,0.4,2.0,0.76,0.14,0.96,0.12,0,56,0,54,4.7,4.0,177,34,429]},
@@ -186,7 +186,7 @@
     {n:"土豆(蒸)",cat:"carb",p:2,f:0.1,c:20,fi:1.8,k:87,unit:"g",note:"低脂慢碳，钾高",mi:[0,0,0.03,1.5,0.08,0.02,1.1,0.3,0,10,13,8,0.3,0.3,20,0.3,328]},
     {n:"香蕉",cat:"carb",p:1.1,f:0.3,c:23,fi:2.6,k:89,unit:"g",note:"练后快碳，钾高",mi:[3,0,0.1,0.5,0.03,0.07,0.7,0.37,0,20,8.7,5,0.26,0.15,27,1.0,358]},
     {n:"全麦面包",cat:"carb",p:13,f:3.4,c:41,fi:7,k:247,unit:"g",note:"看配料表，真全麦",mi:[0,0,0.9,1.4,0.4,0.2,4.0,0.2,0,42,0,107,2.5,1.8,82,25,254]},
-    {n:"意大利面(熟)",cat:"carb",p:5,f:1,c:25,fi:1.8,k:130,unit:"g",note:"慢碳主食",mi:[0,0,0.06,0.1,0.1,0.03,1.0,0.05,0,62,0,7,0.5,0.5,18,26,44]},
+    {n:"意大利面(熟)",cat:"carb",p:5.8,f:0.9,c:30.9,fi:1.8,k:158,unit:"g",note:"慢碳主食",mi:[0,0,0.06,0.1,0.1,0.03,1.0,0.05,0,62,0,7,0.5,0.5,18,26,44]},
     // 蔬菜（看纤维 + 维生素矿物质）
     {n:"西兰花(生)",cat:"veg",p:2.8,f:0.4,c:6.6,fi:2.6,k:34,unit:"g",note:"维C+维K双高",mi:[31,0,0.78,101.6,0.07,0.12,0.64,0.18,0,63,89,47,0.73,0.41,21,2.5,316]},
     {n:"菠菜(生)",cat:"veg",p:2.9,f:0.4,c:3.6,fi:2.2,k:23,unit:"g",note:"叶酸+维K极高（草酸影响铁吸收）",mi:[469,0,2.0,483,0.08,0.19,0.72,0.2,0,194,28,99,2.7,0.53,79,1.0,558]},
@@ -253,10 +253,22 @@
   nBf.addEventListener("input", function(){ autoLbm(); calc(); });
   nW.addEventListener("input", function(){ autoLbm(); calc(); });
   $("btnBmr").addEventListener("click", function(){ var b=mifflin(); if(b){ nBmr.value=b; } calc(); });
-  [nSex,nAge,nH,nAct,nBmr,nLbm,$("nMode"),$("nDeficit")].forEach(function(el){ if(!el) return; el.addEventListener("input", calc); el.addEventListener("change", calc); });
+  [nSex,nAge,nH,nBf,nLbm,nAct,nBmr,$("nMode"),$("nDeficit"),$("protFactor")].forEach(function(el){ if(!el) return; el.addEventListener("input", calc); el.addEventListener("change", calc); });
 
   var lastResult = null;
-  var nMode = $("nMode"), nDeficit = $("nDeficit");
+  var nMode = $("nMode"), nDeficit = $("nDeficit"), nBf = $("nBf"), nW = $("nW"), nLbm = $("nLbm"), nProtFactor = $("protFactor");
+
+  // 蛋白系数按体脂率自动分档（瘦体重口径）；手动输入优先
+  function protFactorFor(bf, mode){
+    if(mode==="cut"){
+      if(bf < 15) return {f:2.4, tier:"偏瘦 · 高保护"};
+      if(bf < 20) return {f:2.2, tier:"常规 · 标准保肌"};
+      return {f:2.0, tier:"体脂偏高 · 基础保肌"};
+    }
+    if(bf < 15) return {f:2.2, tier:"偏瘦 · 高保护"};
+    if(bf < 20) return {f:2.0, tier:"常规 · 标准"};
+    return {f:1.8, tier:"体脂偏高 · 基础"};
+  }
   function calc(){
     var w=parseFloat(nW.value)||0, lbm=parseFloat(nLbm.value)||0, act=parseFloat(nAct.value)||1.375, bmr=parseFloat(nBmr.value)||0;
     if(!w||!lbm||!bmr){ return; }
@@ -265,8 +277,14 @@
     var dv = nDeficit ? parseFloat(nDeficit.value) : NaN;
     var deficit = mode==="cut" ? Math.max(0, Math.min(600, isNaN(dv)?250:dv)) : 0;
     var target = Math.round(maint - deficit);
-    var prot = Math.round(lbm*(mode==="cut"?2.4:2.2));
-    prot = Math.max(Math.round(w*1.6), Math.min(prot, Math.round(lbm*2.6)));
+    var bf = parseFloat(nBf && nBf.value) || 0;
+    var auto = protFactorFor(bf, mode);
+    var manualF = nProtFactor ? parseFloat(nProtFactor.value) : NaN;
+    var useManual = !isNaN(manualF) && manualF >= 1.6 && manualF <= 3.2;
+    var pf = useManual ? manualF : auto.f;
+    var tierTxt = useManual ? "手动指定" : auto.tier;
+    var prot = Math.round(lbm*pf);
+    prot = Math.max(Math.round(w*1.4), Math.min(prot, Math.round(lbm*3.2)));
     var fat = Math.round(w*0.8);
     var carbCal = target - prot*4 - fat*9;
     var carb = carbCal>0 ? Math.round(carbCal/4) : 0;
@@ -276,19 +294,25 @@
 
     $("macroCards").innerHTML =
       card("目标热量", target, "kcal", modeTxt) +
-      card("蛋白质", prot, "g", (mode==="cut"?"瘦体重×2.4":"瘦体重×2.2")+"，约"+Math.round(prot*4)+"kcal") +
+      card("蛋白质", prot, "g", "瘦体重×"+pf.toFixed(1)+"（"+tierTxt+"），约"+Math.round(prot*4)+"kcal") +
       card("脂肪", fat, "g", "体重×0.8，约"+Math.round(fat*9)+"kcal") +
       card("碳水", carb, "g", "剩余热量，约"+Math.round(carb*4)+"kcal") +
       card("膳食纤维", fiber, "g", "热量÷1000×14") +
       card("饮水", water, "L", "训练日 +0.5L");
 
+    var ph = $("protHint");
+    if(ph){
+      var eq = (prot/w).toFixed(2);
+      ph.innerHTML = "当前档位：<b>"+tierTxt+"</b> ｜ 系数 <b>瘦体重×"+pf.toFixed(1)+"</b>（体脂 "+bf.toFixed(1)+"%）<br>"+
+        "换算成体重口径 ≈ <b>"+eq+" g/kg</b>（通用建议区间 1.6–2.2）；分母不同、系数不同，但结果是同一个数。";
+    }
     var mh = $("modeHint");
     if(mh){
       mh.textContent = mode==="cut"
-        ? "维持 "+maint+" kcal → 目标 "+target+" kcal（缺口 "+deficit+"）。每周体重降幅控制在 0.25–0.5% 以内；蛋白按 1.8–2.2 g/kg 给足。"
+        ? "维持 "+maint+" kcal → 目标 "+target+" kcal（缺口 "+deficit+"）。每周体重降幅控制在 0.25–0.5% 以内；蛋白已按体脂档位给足。"
         : "维持 "+maint+" kcal，不制造缺口；适合状态不稳或想先适应训练的阶段。";
     }
-    $("macroFormula").textContent = "计算链：维持热量 = BMR("+bmr+") × 活动系数("+act+") = "+maint+" kcal ｜ "+modeTxt+" → 目标 "+target+" kcal ｜ 蛋白 = 瘦体重("+lbm+"kg)×"+(mode==="cut"?"2.4":"2.2")+" = "+prot+"g ｜ 脂肪 = 体重("+w+"kg)×0.8 = "+fat+"g ｜ 碳水 = (目标−蛋白×4−脂肪×9)÷4 = "+carb+"g。";
+    $("macroFormula").textContent = "计算链：维持热量 = BMR("+bmr+") × 活动系数("+act+") = "+maint+" kcal ｜ "+modeTxt+" → 目标 "+target+" kcal ｜ 蛋白 = 瘦体重("+lbm+"kg)×"+pf.toFixed(1)+"("+tierTxt+") = "+prot+"g ｜ 脂肪 = 体重("+w+"kg)×0.8 = "+fat+"g ｜ 碳水 = (目标−蛋白×4−脂肪×9)÷4 = "+carb+"g。";
 
     var tb = $("mealTbl").querySelector("tbody");
     tb.innerHTML = MEALS.map(function(m){
@@ -296,7 +320,7 @@
       return "<tr><td><b>"+m.name+"</b></td><td>"+Math.round(m.pct*100)+"%</td><td>"+cal+"</td><td>"+p+"</td><td>"+f+"</td><td>"+c+"</td></tr>";
     }).join("");
 
-    lastResult = {maint:maint,target:target,mode:mode,deficit:deficit,prot:prot,fat:fat,carb:carb,fiber:fiber,water:water};
+    lastResult = {maint:maint,target:target,mode:mode,deficit:deficit,prot:prot,fat:fat,carb:carb,fiber:fiber,water:water,pf:pf,tier:tierTxt,bf:bf};
   }
   function card(t,v,u,sub){
     return '<div class="mcard"><div class="m-t">'+t+'</div><div class="m-v">'+v+'<span class="m-u">'+u+'</span></div><div class="m-s">'+sub+'</div></div>';
