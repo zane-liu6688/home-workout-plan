@@ -324,3 +324,7 @@ td.mid{color:#c9821a;font-weight:700}
 /* ===== 蛋白档位说明 ===== */
 .prot-hint{background:#eef8f3;border-left:3px solid var(--accent);font-size:.86rem;line-height:1.75;margin:0 0 12px;padding:10px 12px}
 .prot-hint b{color:var(--ink)}
+
+/* ===== 推日进阶层折叠卡 ===== */
+.tier-adv>summary{background:#fff8ee;color:#8a5a12}
+.tier-adv .fold-body>.ex-list{margin-top:12px}
